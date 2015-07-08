@@ -10,7 +10,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glut.h>
+#include <GLUT/glut.h>
 
 /* macros */
 

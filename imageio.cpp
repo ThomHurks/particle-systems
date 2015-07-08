@@ -9,7 +9,7 @@ unsigned char *_loadImgError(int *width, int *height) {
 }
 
 // Returns true iff the string s ends with postfix
-bool _endsWith(char *s, char *postfix) {
+bool _endsWith(const char *s, const char *postfix) {
   int sLen = strlen(s);
   int postfixLen = strlen(postfix);
   if (postfixLen > sLen)
@@ -54,7 +54,7 @@ unsigned char *_loadImageRGBApng(char *fileName, int *width, int *height) {
     return _loadImgError(width, height);
   }
 
-  if (setjmp(png_ptr->jmpbuf)) {
+  if (setjmp(png_jmpbuf(png_ptr))) {
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
     fclose(fp);
     return _loadImgError(width, height);
@@ -126,7 +126,7 @@ bool _saveImageRGBApng(char *fileName, unsigned char *buffer, int width, int hei
   }
 
   // do the setjmp thingy
-  if (setjmp(png_ptr->jmpbuf)) {
+  if (setjmp(png_jmpbuf(png_ptr))) {
     png_destroy_write_struct(&png_ptr, &info_ptr);
     fclose(fp);
     return false;
