@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Particle.h"
+#include "Force.h"
 
-class SpringForce {
+class SpringForce : public Force {
+    
  public:
   SpringForce(Particle *p1, Particle * p2, double dist, double ks, double kd);
-
   void draw();
 
  private:
-
   Particle * const m_p1;   // particle 1
   Particle * const m_p2;   // particle 2 
   double const m_dist;     // rest length

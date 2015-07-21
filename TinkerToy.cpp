@@ -2,6 +2,8 @@
 //
 
 #include "Particle.h"
+#include "Force.h"
+#include "Solver.h"
 #include "SpringForce.h"
 #include "RodConstraint.h"
 #include "CircularWireConstraint.h"
@@ -17,11 +19,6 @@
 #include <GL/glut.h>
 #endif
 
-/* macros */
-
-/* external definitions (from solver) */
-extern void simulation_step( std::vector<Particle*> pVector, float dt );
-
 /* global variables */
 
 static int N;
@@ -32,6 +29,7 @@ static int frame_number;
 
 // static Particle *pList;
 static std::vector<Particle*> pVector;
+static std::vector<Force*> fVector;
 
 static int win_id;
 static int win_x, win_y;
@@ -55,6 +53,7 @@ free/clear/allocate simulation data
 static void free_data ( void )
 {
 	pVector.clear();
+    fVector.clear();
 	if (delete_this_dummy_rod) {
 		delete delete_this_dummy_rod;
 		delete_this_dummy_rod = NULL;
@@ -93,6 +92,7 @@ static void init_system(void)
 	
 	// You shoud replace these with a vector generalized forces and one of
 	// constraints...
+    fVector.push_back(new Force());
 	delete_this_dummy_spring = new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0);
 	delete_this_dummy_rod = new RodConstraint(pVector[1], pVector[2], dist);
 	delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
