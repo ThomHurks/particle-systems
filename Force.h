@@ -6,11 +6,15 @@
 //  Copyright (c) 2015 Thom Hurks. All rights reserved.
 //
 
+#pragma once
+#include "Particle.h"
+#include <vector>
+
 class Force
 {
 public:
     Force();
      ~Force();
-    virtual void temp();
     virtual void draw();
+    virtual void ApplyForce(std::vector<Particle*> pVector);
 };

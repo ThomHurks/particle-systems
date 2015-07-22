@@ -11,6 +11,6 @@
 class GravityForce : public Force
 {
 public:
-    void temp();
     void draw();
+    void ApplyForce(std::vector<Particle*> pVector);
 };

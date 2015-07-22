@@ -8,8 +8,8 @@
 
 #include "GravityForce.h"
 
-void GravityForce::temp()
+void GravityForce::draw()
 {}
 
-void GravityForce::draw()
+void GravityForce::ApplyForce(std::vector<Particle*> pVector)
 {}

@@ -3,6 +3,7 @@
 
 #include "Particle.h"
 #include "Force.h"
+#include "GravityForce.h"
 #include "Solver.h"
 #include "SpringForce.h"
 #include "RodConstraint.h"
@@ -92,7 +93,7 @@ static void init_system(void)
 	
 	// You shoud replace these with a vector generalized forces and one of
 	// constraints...
-    fVector.push_back(new Force());
+    fVector.push_back(new GravityForce());
 	delete_this_dummy_spring = new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0);
 	delete_this_dummy_rod = new RodConstraint(pVector[1], pVector[2], dist);
 	delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
@@ -273,7 +274,7 @@ static void reshape_func ( int width, int height )
 
 static void idle_func ( void )
 {
-	if ( dsim ) simulation_step( pVector, dt );
+	if ( dsim ) simulation_step( pVector, fVector, dt );
 	else        {get_from_UI();remap_GUI();}
 
 	glutSetWindow ( win_id );

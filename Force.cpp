@@ -14,8 +14,8 @@ Force::Force()
 Force::~Force()
 {}
 
-void Force::temp()
+void Force::draw()
 {}
 
-void Force::draw()
+void Force::ApplyForce(std::vector<Particle*> pVector)
 {}

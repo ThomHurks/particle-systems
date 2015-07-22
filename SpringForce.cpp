@@ -17,3 +17,6 @@ void SpringForce::draw()
   glVertex2f( m_p2->m_Position[0], m_p2->m_Position[1] );
   glEnd();
 }
+
+void SpringForce::ApplyForce(std::vector<Particle*> pVector)
+{}
