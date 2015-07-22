@@ -1,6 +1,6 @@
 #include "Solver.h"
 
-void simulation_step(std::vector<Particle*> pVector, std::vector<Force*> fVector, const float dt)
+void simulation_step(const std::vector<Particle*> pVector, const std::vector<Force*> fVector, const float dt)
 {
     std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
     ParticleDerivative(pVector, fVector, dVector);
@@ -15,7 +15,7 @@ void simulation_step(std::vector<Particle*> pVector, std::vector<Force*> fVector
 	}
 }
 
-void ParticleDerivative(std::vector<Particle*> pVector, std::vector<Force*> fVector, std::vector<Derivative> & dVector)
+void ParticleDerivative(const std::vector<Particle*> pVector, const std::vector<Force*> fVector, std::vector<Derivative> & dVector)
 {
     ClearForces(pVector);
     CalculateForces(pVector, fVector);
@@ -28,7 +28,7 @@ void ParticleDerivative(std::vector<Particle*> pVector, std::vector<Force*> fVec
     }
 }
 
-void ClearForces(std::vector<Particle*> pVector)
+void ClearForces(const std::vector<Particle*> pVector)
 {
     int i;
     int n = pVector.size();
@@ -38,7 +38,7 @@ void ClearForces(std::vector<Particle*> pVector)
     }
 }
 
-void CalculateForces(std::vector<Particle*> pVector, std::vector<Force*> fVector)
+void CalculateForces(const std::vector<Particle*> pVector, const std::vector<Force*> fVector)
 {
     int i;
     int n = fVector.size();
