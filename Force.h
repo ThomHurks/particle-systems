@@ -16,5 +16,5 @@ public:
     Force();
      ~Force();
     virtual void draw();
-    virtual void ApplyForce(std::vector<Particle*> & pVector);
+    virtual void ApplyForce(const std::vector<Particle*> & pVector);
 };

@@ -8,12 +8,12 @@
 
 #include "GravityForce.h"
 
-const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -6.67384 / pow(10.0, 5.0)); // Figure out why 10^11 (actual gravitational constant) does not work.
+const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -6.67384 * pow(10.0, -3.0)); // Figure out why 10^-11 (actual gravitational constant) does not work.
 
 void GravityForce::draw()
 {}
 
-void GravityForce::ApplyForce(std::vector<Particle*> & pVector)
+void GravityForce::ApplyForce(const std::vector<Particle*> & pVector)
 {
     int i;
     int n = pVector.size();
