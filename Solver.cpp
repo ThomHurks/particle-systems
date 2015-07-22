@@ -38,7 +38,7 @@ void ClearForces(const std::vector<Particle*> & pVector)
     }
 }
 
-void CalculateForces(const std::vector<Particle*> pVector, const std::vector<Force*> & fVector)
+void CalculateForces(std::vector<Particle*> pVector, const std::vector<Force*> & fVector)
 {
     int i;
     int n = fVector.size();
