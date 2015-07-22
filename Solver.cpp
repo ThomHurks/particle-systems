@@ -1,41 +1,34 @@
 #include "Solver.h"
 
-static const float DAMP = 0.98f;
-
-void simulation_step(std::vector<Particle*> pVector, std::vector<Force*> fVector, float dt)
+void simulation_step(std::vector<Particle*> pVector, std::vector<Force*> fVector, const float dt)
 {
-    
+    std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
+    ParticleDerivative(pVector, fVector, dVector);
+    ScaleDerivativeVector(dVector, dt);
     
 	int ii, size = pVector.size();
 	
 	for(ii=0; ii<size; ii++)
 	{
-		pVector[ii]->m_Position += dt * pVector[ii]->m_Velocity;
-		pVector[ii]->m_Velocity = DAMP * pVector[ii]->m_Velocity + GetRandomDirection() * 0.005;
+        pVector[ii]->m_Position += dVector[ii].XDot;
+        pVector[ii]->m_Velocity += dVector[ii].VDot;
 	}
 }
 
-Vec2f GetRandomDirection()
-{
-    float randX = (((rand() % 2000) / 1000.f) - 1.f);
-    float randY = (((rand() % 2000) / 1000.f) - 1.f);
-    return Vec2f(randX, randY);
-}
-
-void ParticleDerivative(std::vector<Particle*> pVector, std::vector<Force*> fVector, std::vector<Derivative> dVector)
+void ParticleDerivative(std::vector<Particle*> pVector, std::vector<Force*> fVector, std::vector<Derivative> & dVector)
 {
     ClearForces(pVector);
     CalculateForces(pVector, fVector);
-    int n = pVector.size();
+    int n = dVector.size();
     int i;
     for(i = 0; i < n; ++i)
     {
-        dVector[i]->XDot = pVector[i]->m_Velocity;
-        dVector[i]->VDot = pVector[i]->m_AccumulatedForce / pVector[i]->m_Mass;
+        dVector[i].XDot = pVector[i]->m_Velocity;
+        dVector[i].VDot = pVector[i]->m_AccumulatedForce / pVector[i]->m_Mass;
     }
 }
 
-void ClearForces(const std::vector<Particle*> pVector)
+void ClearForces(std::vector<Particle*> pVector)
 {
     int i;
     int n = pVector.size();
@@ -48,10 +41,21 @@ void ClearForces(const std::vector<Particle*> pVector)
 void CalculateForces(std::vector<Particle*> pVector, std::vector<Force*> fVector)
 {
     int i;
-    int n = pVector.size();
+    int n = fVector.size();
     for(i = 0; i < n; ++i)
     {
         fVector[i]->ApplyForce(pVector);
+    }
+}
+
+void ScaleDerivativeVector(std::vector<Derivative> dVector, const float scaleFactor)
+{
+    int i;
+    int n = dVector.size();
+    for(i = 0; i < n; ++i)
+    {
+        dVector[i].XDot *= scaleFactor;
+        dVector[i].VDot *= scaleFactor;
     }
 }
 

@@ -10,17 +10,17 @@
 #include "Force.h"
 #include <vector>
 
-void simulation_step(std::vector<Particle*> pVector, std::vector<Force*> fVector, float dt);
-
-Vec2f GetRandomDirection();
-
-typedef struct {
+struct Derivative {
     Vec2f XDot;
     Vec2f VDot;
-} *Derivative;
+};
 
-void ParticleDerivative(std::vector<Particle*> pVector, std::vector<Force*> fVector, std::vector<Derivative> dVector);
+void simulation_step(std::vector<Particle*> pVector, std::vector<Force*> fVector, const float dt);
 
-void ClearForces(const std::vector<Particle*> pVector);
+void ParticleDerivative(std::vector<Particle*> pVector, std::vector<Force*> fVector, std::vector<Derivative> & dVector);
+
+void ClearForces(std::vector<Particle*> pVector);
 
 void CalculateForces(std::vector<Particle*> pVector, std::vector<Force*> fVector);
+
+void ScaleDerivativeVector(std::vector<Derivative> dVector, const float scaleFactor);
