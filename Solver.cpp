@@ -28,7 +28,7 @@ void ParticleDerivative(const std::vector<Particle*> pVector, const std::vector<
     }
 }
 
-void ClearForces(const std::vector<Particle*> pVector)
+void ClearForces(const std::vector<Particle*> & pVector)
 {
     int i;
     int n = pVector.size();
@@ -38,7 +38,7 @@ void ClearForces(const std::vector<Particle*> pVector)
     }
 }
 
-void CalculateForces(const std::vector<Particle*> pVector, const std::vector<Force*> fVector)
+void CalculateForces(const std::vector<Particle*> pVector, const std::vector<Force*> & fVector)
 {
     int i;
     int n = fVector.size();

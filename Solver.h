@@ -19,8 +19,8 @@ void simulation_step(const std::vector<Particle*> pVector, const std::vector<For
 
 void ParticleDerivative(const std::vector<Particle*> pVector, const std::vector<Force*> fVector, std::vector<Derivative> & dVector);
 
-void ClearForces(const std::vector<Particle*> pVector);
+void ClearForces(const std::vector<Particle*> & pVector);
 
-void CalculateForces(const std::vector<Particle*> pVector, const std::vector<Force*> fVector);
+void CalculateForces(const std::vector<Particle*> pVector, const std::vector<Force*> & fVector);
 
 void ScaleDerivativeVector(std::vector<Derivative> dVector, const float scaleFactor);
