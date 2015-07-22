@@ -12,7 +12,7 @@ class GravityForce : public Force
 {
 public:
     void draw();
-    void ApplyForce(std::vector<Particle*> pVector);
+    void ApplyForce(std::vector<Particle*> & pVector);
 private:
     static const Vec2f m_Gravity;
 };

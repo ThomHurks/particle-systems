@@ -17,5 +17,5 @@ Force::~Force()
 void Force::draw()
 {}
 
-void Force::ApplyForce(std::vector<Particle*> pVector)
+void Force::ApplyForce(std::vector<Particle*> & pVector)
 {}
