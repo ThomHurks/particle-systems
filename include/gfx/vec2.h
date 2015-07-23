@@ -142,12 +142,16 @@ inline std::istream &operator>>(std::istream &in, TVec2<T>& v)
 
 template<class T> inline T norm2(const TVec2<T>& v)  { return v*v; }
 template<class T> inline T norm(const TVec2<T>& v)   { return sqrt(norm2(v)); }
+template<class T> inline T magnitude(const TVec2<T>& v)   { return norm(v); }
 
-template<class T> inline void unitize(TVec2<T>& v)
+template<class T> inline TVec2<T> unitize(TVec2<T>& v)
 {
     T l = norm2(v);
     if( l!=1.0 && l!=0.0 )  v /= sqrt(l);
+    return v;
 }
+    
+template<class T> inline TVec2<T> normalized(TVec2<T>& v) { return unitize(v); }
 
 typedef TVec2<double> Vec2;
 typedef TVec2<float>  Vec2f;
