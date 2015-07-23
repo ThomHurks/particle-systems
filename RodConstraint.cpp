@@ -16,5 +16,7 @@ void RodConstraint::draw()
   glColor3f(0.8, 0.7, 0.6);
   glVertex2f( m_p2->m_Position[0], m_p2->m_Position[1] );
   glEnd();
-
 }
+
+void RodConstraint::ApplyForce(const std::vector<Particle*> & pVector)
+{}

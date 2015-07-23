@@ -28,9 +28,9 @@ static int dsim;
 static int dump_frames;
 static int frame_number;
 
-// static Particle *pList;
 static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
+static std::vector<Force*> cVector;
 
 static int win_id;
 static int win_x, win_y;
@@ -54,6 +54,7 @@ static void free_data ( void )
 {
 	pVector.clear();
     fVector.clear();
+    cVector.clear();
 	if (delete_this_dummy_rod) {
 		delete delete_this_dummy_rod;
 		delete_this_dummy_rod = NULL;
@@ -90,6 +91,8 @@ static void init_system(void)
 	// constraints...
     fVector.push_back(new GravityForce());
     fVector.push_back(new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0));
+    
+    cVector.push_back(new RodConstraint(pVector[1], pVector[2], dist));
 	delete_this_dummy_rod = new RodConstraint(pVector[1], pVector[2], dist);
 	delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 }
@@ -158,7 +161,13 @@ static void draw_forces ( void )
 
 static void draw_constraints ( void )
 {
-	// change this to iteration over full set
+    int i;
+    int n = cVector.size();
+    for(i = 0; i < n; ++i)
+    {
+        cVector[i]->draw();
+    }
+    // Delete this eventually:
 	if (delete_this_dummy_rod)
 		delete_this_dummy_rod->draw();
 	if (delete_this_dummy_wire)
@@ -272,7 +281,7 @@ static void reshape_func ( int width, int height )
 
 static void idle_func ( void )
 {
-	if ( dsim ) simulation_step( pVector, fVector, dt );
+	if ( dsim ) simulation_step( pVector, fVector, cVector, dt );
 	else        {get_from_UI();remap_GUI();}
 
 	glutSetWindow ( win_id );

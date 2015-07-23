@@ -1,16 +1,16 @@
 #pragma once
 
-#include "Particle.h"
+#include "Force.h"
 
-class RodConstraint {
- public:
-  RodConstraint(Particle *p1, Particle * p2, double dist);
+class RodConstraint : public Force
+{
+public:
+    RodConstraint(Particle *p1, Particle * p2, double dist);
+    void draw();
+    void ApplyForce(const std::vector<Particle*> & pVector);
 
-  void draw();
-
- private:
-
-  Particle * const m_p1;
-  Particle * const m_p2;
-  double const m_dist;
+private:
+    Particle * const m_p1;
+    Particle * const m_p2;
+    double const m_dist;
 };

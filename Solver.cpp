@@ -1,9 +1,9 @@
 #include "Solver.h"
 
-void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const float dt)
+void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt)
 {
     std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
-    ParticleDerivative(pVector, fVector, dVector);
+    ParticleDerivative(pVector, fVector, cVector, dVector);
     ScaleDerivativeVector(dVector, dt);
     
 	int ii, size = pVector.size();
@@ -15,10 +15,14 @@ void simulation_step(const std::vector<Particle*> & pVector, const std::vector<F
 	}
 }
 
-void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, std::vector<Derivative> & dVector)
+void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Derivative> & dVector)
 {
     ClearForces(pVector);
+    // First calculate forces:
     CalculateForces(pVector, fVector);
+    // Then calculate constraint forces:
+    CalculateForces(pVector, cVector);
+    // Then derivatives:
     int n = dVector.size();
     int i;
     for(i = 0; i < n; ++i)

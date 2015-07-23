@@ -15,9 +15,9 @@ struct Derivative {
     Vec2f VDot;
 };
 
-void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const float dt);
+void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt);
 
-void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, std::vector<Derivative> & dVector);
+void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Derivative> & dVector);
 
 void ClearForces(const std::vector<Particle*> & pVector);
 
