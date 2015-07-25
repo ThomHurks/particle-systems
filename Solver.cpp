@@ -1,23 +1,41 @@
 #include "Solver.h"
 
 void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt) {
-    std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
-    ParticleDerivative(pVector, fVector, cVector, dVector);
-    ScaleDerivativeVector(dVector, dt);
 
-    int ii, size = pVector.size();
-    int mode = 0;
+
+
+    int mode = 1;
     if (mode == 0) {//Euler
+        int ii, size = pVector.size();
+        std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
+        ParticleDerivative(pVector, fVector, cVector, dVector);
+        ScaleDerivativeVector(dVector, dt);
         for (ii = 0; ii < size; ii++) {
             pVector[ii]->m_Position += dVector[ii].XDot;
             pVector[ii]->m_Velocity += dVector[ii].VDot;
         }
-    }else if(mode == 1)//midpoint step
+    } else if (mode == 1)//midpoint step
     {
-        
-    }else if(mode == 2)//runga kutta 4
+        int ii, size = pVector.size();
+        std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
+        std::vector<Derivative> originals(pVector.size());
+        ParticleDerivative(pVector, fVector, cVector, dVector);
+        ScaleDerivativeVector(dVector, dt / 2); //notice the /2
+        for (ii = 0; ii < size; ii++) {//Make half an euler step, save original positions and velocities
+            originals[ii].XDot = pVector[ii]->m_Position;
+            originals[ii].VDot = pVector[ii]->m_Velocity;
+            pVector[ii]->m_Position += dVector[ii].XDot;
+            pVector[ii]->m_Velocity += dVector[ii].VDot;
+        }
+        ParticleDerivative(pVector, fVector, cVector, dVector);
+        ScaleDerivativeVector(dVector, dt);
+        for (ii = 0; ii < size; ii++) {
+            pVector[ii]->m_Position = originals[ii].XDot + dVector[ii].XDot;
+            pVector[ii]->m_Velocity = originals[ii].VDot + dVector[ii].VDot;
+        }
+    } else if (mode == 2)//runga kutta 4
     {
-        
+
     }
 }
 
