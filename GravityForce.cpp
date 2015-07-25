@@ -8,8 +8,8 @@
 
 #include "GravityForce.h"
 
-const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -6.67384 * pow(10.0, -3.0)); // Figure out why 10^-11 (actual gravitational constant) does not work.
-//Zou het niet (0,-9.81) moeten zijn?
+const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -9.81*0.000001);
+
  
 void GravityForce::draw()
 {}
@@ -20,6 +20,6 @@ void GravityForce::ApplyForce(const std::vector<Particle*> & pVector)
     int n = pVector.size();
     for(i = 0; i < n; ++i)
     {
-        pVector[i]->m_AccumulatedForce += m_Gravity;
+        pVector[i]->m_AccumulatedForce += m_Gravity*pVector[i]->m_Mass;
     }
 }

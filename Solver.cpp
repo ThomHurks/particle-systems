@@ -4,7 +4,7 @@ void simulation_step(const std::vector<Particle*> & pVector, const std::vector<F
 
 
 
-    int mode = 1;
+    int mode = 0;
     if (mode == 0) {//Euler
         int ii, size = pVector.size();
         std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
