@@ -216,8 +216,7 @@ static void remap_GUI()
 	int ii, size = pVector.size();
 	for(ii=0; ii<size; ii++)
 	{
-		pVector[ii]->m_Position[0] = pVector[ii]->m_ConstructPos[0];
-		pVector[ii]->m_Position[1] = pVector[ii]->m_ConstructPos[1];
+		pVector[ii]->reset();
 	}
 }
 

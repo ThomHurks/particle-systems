@@ -2,8 +2,12 @@
 #define IMAGE_IO_H
 
 #include <stdlib.h>
-#include <png.h>
 #include <string.h>
+#ifdef __APPLE__
+#include <png.h>
+#else
+#include <C:\cygwin64\usr\i686-pc-cygwin\sys-root\usr\include\png.h>
+#endif
 
 //
 // COMPILATION

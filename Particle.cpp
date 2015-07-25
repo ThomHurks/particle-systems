@@ -1,3 +1,7 @@
+
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "Particle.h"
 #ifdef __APPLE__
 #include <GLUT/glut.h>
