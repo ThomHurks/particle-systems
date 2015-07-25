@@ -85,10 +85,10 @@ static void init_system(void)
 	// circular wire constraint to the first.
 
 	pVector.push_back(new Particle(center + offset));
-        pVector[0]->m_Mass=100;
 	pVector.push_back(new Particle(center + offset + offset2));
 	pVector.push_back(new Particle(center + offset + offset + offset));
-        
+    pVector.push_back(new Particle(center + offset + offset + offset + offset));
+    pVector[1]->m_Mass = 100.0;
 	
 	// You shoud replace these with a vector generalized forces and one of
 	// constraints...
@@ -97,8 +97,8 @@ static void init_system(void)
     fVector.push_back(new SpringForce(pVector[1], pVector[2], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[2], pVector[0], dist, 1.0, 1.0));
     
-    //cVector.push_back(new RodConstraint(pVector[1], pVector[2], dist));
-	//delete_this_dummy_rod = new RodConstraint(pVector[1], pVector[2], dist);
+    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist));
+	delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
 	delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 }
 
