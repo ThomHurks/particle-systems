@@ -6,7 +6,7 @@
 #endif
 
 RodConstraint::RodConstraint(Particle *p1, Particle * p2, double dist) :
-  m_p1(p1), m_p2(p2), m_dist(dist) {}
+  m_p1(p1), m_p2(p2), m_dist(dist), m_distSquared(dist * dist) {}
 
 void RodConstraint::draw()
 {
@@ -19,4 +19,7 @@ void RodConstraint::draw()
 }
 
 void RodConstraint::ApplyForce(const std::vector<Particle*> & pVector)
-{}
+{
+    double C = sqrMagnitude(m_p1->m_Position - m_p2->m_Position) - m_distSquared;
+    // Then plug into equation 11 and solve.
+}

@@ -13,4 +13,5 @@ private:
     Particle * const m_p1;
     Particle * const m_p2;
     double const m_dist;
+    double const m_distSquared;
 };
