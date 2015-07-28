@@ -38,7 +38,11 @@ set(SOURCE_FILES
     Solver.h
     SpringForce.cpp
     SpringForce.h
-    TinkerToy.cpp)
+    TinkerToy.cpp
+    MouseSpringForce.cpp
+    MouseSpringForce.h
+    AngularSpring.cpp
+    AngularSpring.h)
 
 add_executable(tue_scg_particle_systems ${SOURCE_FILES})
 
