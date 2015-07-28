@@ -1,6 +1,8 @@
 #include "CircularWireConstraint.h"
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include <math.h>
+
 #else
 #include <GL/glut.h>
 #endif
@@ -21,13 +23,13 @@ void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     // Then plug into equation 11 and solve.
 }
 
-void CircularWireConstraint::draw_circle(const Vec2f & vect, float radius)
+void CircularWireConstraint::draw_circle(const Vec2f & vect, const double radius)
 {
     glBegin(GL_LINE_LOOP);
     glColor3f(0.0,1.0,0.0);
     for (int i=0; i<360; i=i+18)
     {
-        float degInRad = i*PI/180;
+        double degInRad = i*PI/180;
         glVertex2f(vect[0]+cos(degInRad)*radius,vect[1]+sin(degInRad)*radius);
     }
     glEnd();

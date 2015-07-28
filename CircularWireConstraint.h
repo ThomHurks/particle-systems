@@ -9,7 +9,7 @@ public:
     void ApplyForce(const std::vector<Particle*> & pVector);
 
 private:
-    static void draw_circle(const Vec2f & vect, float radius);
+    static void draw_circle(const Vec2f & vect, const double radius);
     Particle * const m_p;
     Vec2f const m_center;
     double const m_radius;

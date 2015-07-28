@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -9,8 +8,9 @@
 #include <GL/glut.h>
 #endif
 
-Particle::Particle(const Vec2f & ConstructPos) :
-	m_ConstructPos(ConstructPos), m_Position(Vec2f(0.0, 0.0)), m_Velocity(Vec2f(0.0, 0.0)), m_AccumulatedForce(Vec2f(0.0, 0.0)), m_Mass(1)
+Particle::Particle(const Vec2f & ConstructPos, int id) :
+	m_ConstructPos(ConstructPos), m_Position(Vec2f(0.0, 0.0)), m_Velocity(Vec2f(0.0, 0.0)),
+	m_AccumulatedForce(Vec2f(0.0, 0.0)), m_Mass(1), m_ID(id)
 {
 }
 

@@ -1,6 +1,7 @@
 // TinkerToy.cpp : Defines the entry point for the console application.
 //
 
+#include "BlockSparseMatrix.h"
 #include "Particle.h"
 #include "Force.h"
 #include "GravityForce.h"
@@ -16,6 +17,8 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include <iostream>
+
 #else
 #include <GL/glut.h>
 #endif
@@ -84,22 +87,33 @@ static void init_system(void)
 	// Create three particles, attach them to each other, then add a
 	// circular wire constraint to the first.
 
-	pVector.push_back(new Particle(center + offset));
-	pVector.push_back(new Particle(center + offset + offset2));
-	pVector.push_back(new Particle(center + offset + offset + offset));
-    pVector.push_back(new Particle(center + offset + offset + offset + offset));
+    int particleID = 0;
+	pVector.push_back(new Particle(center + offset, particleID++));
+	pVector.push_back(new Particle(center + offset + offset2, particleID++));
+	pVector.push_back(new Particle(center + offset + offset + offset, particleID++));
+    pVector.push_back(new Particle(center + offset + offset + offset + offset, particleID++));
     pVector[1]->m_Mass = 100.0;
 	
-	// You shoud replace these with a vector generalized forces and one of
+	// You should replace these with a vector generalized forces and one of
 	// constraints...
     fVector.push_back(new GravityForce());
     fVector.push_back(new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[1], pVector[2], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[2], pVector[0], dist, 1.0, 1.0));
     
-    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist));
-	delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
+    int constraintID = 0;
+    BlockSparseMatrix bsp;
+    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, &bsp, constraintID++));
+	//delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
 	delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
+
+    // The following code is purely to test the BlockSparseMatrix functionality and can be removed later:
+	double x[] = { 2 };
+	double r[] = { 0, 0, 0, 0 };
+	bsp.matVecMult(x, r);
+    int i, r_len = 4;
+    for (i = 0; i < r_len; ++i)
+    { std::cout << r[i]; } // Should print out "0066" to console if everything works.
 }
 
 /*

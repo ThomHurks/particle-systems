@@ -6,14 +6,14 @@
 //  Copyright (c) 2015 Thom Hurks. All rights reserved.
 //
 
+#pragma once
+#include "linearSolver.h"
 #include <vector>
 
 struct MatrixBlock {
-    int i;
-    int j;
-    int ilength;
-    int jlength;
-    float *data;
+    int ci; // constraint index
+    int pi; // particle index
+    double *data;
 };
 
 class BlockSparseMatrix : public implicitMatrixWithTrans
@@ -21,6 +21,7 @@ class BlockSparseMatrix : public implicitMatrixWithTrans
 public:
     void matVecMult(double x[], double r[]);
     void matTransVecMult(double x[], double r[]);
+    void AddBlock(MatrixBlock block);
 private:
     std::vector<MatrixBlock> m_Matrix;
 };

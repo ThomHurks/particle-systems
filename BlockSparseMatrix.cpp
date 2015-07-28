@@ -8,8 +8,27 @@
 
 #include "BlockSparseMatrix.h"
 
-void matVecMult(double x[], double r[])
-{}
+void BlockSparseMatrix::matVecMult(double x[], double r[])
+{
+    int i;
+    size_t n = m_Matrix.size();
+    for (i = 0; i < n; ++i)
+    {
+        r[m_Matrix[i].pi] += *m_Matrix[i].data * x[m_Matrix[i].ci];
+    }
+}
 
-void matTransVecMult(double x[], double r[])
-{}
+void BlockSparseMatrix::matTransVecMult(double x[], double r[])
+{
+    int i;
+    size_t n = m_Matrix.size();
+    for (i = 0; i < n; ++i)
+    {
+        r[m_Matrix[i].ci] += *m_Matrix[i].data * x[m_Matrix[i].pi];
+    }
+}
+
+void BlockSparseMatrix::AddBlock(MatrixBlock block)
+{
+    m_Matrix.push_back(block);
+}
