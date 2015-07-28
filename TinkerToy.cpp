@@ -216,7 +216,7 @@ static void get_from_UI ()
 	if ( i<1 || i>N || j<1 || j>N ) return;
 
 	if ( mouse_down[0] ) {
-            
+            printf("test1");
 	}
 
 	if ( mouse_down[2] ) {
@@ -313,7 +313,7 @@ static void reshape_func ( int width, int height )
 
 static void idle_func ( void )
 {
-	if ( dsim ) simulation_step( pVector, fVector, cVector, dt,m_SolverType );
+	if ( dsim ) {get_from_UI();simulation_step( pVector, fVector, cVector, dt,m_SolverType );}
 	else        {get_from_UI();remap_GUI();}
 
 	glutSetWindow ( win_id );
