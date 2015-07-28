@@ -10,6 +10,7 @@
 #include "RodConstraint.h"
 #include "CircularWireConstraint.h"
 #include "imageio.h"
+#include "MouseSpringForce.h"
 
 #include <vector>
 #include <stdlib.h>
@@ -35,6 +36,7 @@ static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
 static SolverType m_SolverType;
+static MouseSpringForce* msf = NULL;
 
 static int win_id;
 static int win_x, win_y;
@@ -203,30 +205,38 @@ relates mouse movements to tinker toy construction
 
 static void get_from_UI ()
 {
-	int i, j;
+	float i, j;
 	// int size, flag;
 	int hi, hj;
 	// float x, y;
 	if ( !mouse_down[0] && !mouse_down[2] && !mouse_release[0] 
 	&& !mouse_shiftclick[0] && !mouse_shiftclick[2] ) return;
 
-	i = (int)((       mx /(float)win_x)*N);
-	j = (int)(((win_y-my)/(float)win_y)*N);
+	i = ((       mx /(float)win_x)*N);
+	j = (((win_y-my)/(float)win_y)*N);
 
 	if ( i<1 || i>N || j<1 || j>N ) return;
 
+        
+	hi = (int)((       hmx /(float)win_x)*N);
+	hj = (int)(((win_y-hmy)/(float)win_y)*N);
+
 	if ( mouse_down[0] ) {
-            printf("test1");
+            if(msf==NULL)
+            {
+                msf = new MouseSpringForce(pVector[0],0,0.4,0);
+                fVector.push_back(msf);
+            }
+            msf->setMouseLoc(Vec2f(2*(i-N/2)/N,2*(j-N/2)/N));
+            
 	}
 
 	if ( mouse_down[2] ) {
 	}
 
-	hi = (int)((       hmx /(float)win_x)*N);
-	hj = (int)(((win_y-hmy)/(float)win_y)*N);
-
 	if( mouse_release[0] ) {
-            
+            fVector.pop_back();
+            msf = NULL;
             printf("test3");
             mouse_release[0] = 0;//only need to record this once
 	}
