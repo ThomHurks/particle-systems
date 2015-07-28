@@ -8,7 +8,7 @@
 
 #include "GravityForce.h"
 
-const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -9.80665 * pow(10,-4));
+const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -9.80665 * pow(10,-6));
 
  
 void GravityForce::draw()

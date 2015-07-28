@@ -11,6 +11,7 @@
 #include "CircularWireConstraint.h"
 #include "imageio.h"
 #include "MouseSpringForce.h"
+#include "AngularSpring.h"
 
 #include <vector>
 #include <stdlib.h>
@@ -86,6 +87,7 @@ static void init_system(void)
 	const Vec2f center(0.0, 0.0);
 	const Vec2f offset(dist, 0.0);
 	const Vec2f offset2(dist, dist);
+	const Vec2f offset3(0, dist);
 
 	// Create three particles, attach them to each other, then add a
 	// circular wire constraint to the first.
@@ -97,6 +99,11 @@ static void init_system(void)
 	pVector.push_back(new Particle(center + offset + offset + offset, particleID++));
     pVector.push_back(new Particle(center + offset + offset + offset + offset, particleID++));
     pVector[1]->m_Mass = 100.0;
+    
+    
+    pVector.push_back(new Particle(center + offset3 + offset3, particleID++));
+    pVector.push_back(new Particle(center + offset3 + offset3 + offset3, particleID++));
+    pVector.push_back(new Particle(center + offset3 + offset3 + offset3 + offset, particleID++));
 	
 	// You should replace these with a vector generalized forces and one of
 	// constraints...
@@ -104,6 +111,7 @@ static void init_system(void)
     fVector.push_back(new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[1], pVector[2], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[2], pVector[0], dist, 1.0, 1.0));
+    fVector.push_back(new AngularSpring(pVector[4],pVector[5],pVector[6],PI/3.0,0.0001,0));
     
     int constraintID = 0;
     BlockSparseMatrix bsp;
