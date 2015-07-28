@@ -1,8 +1,7 @@
 #include "Solver.h"
 
-void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt)
+void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt, const SolverType m_SolverType)
 {
-    SolverType m_SolverType = SolverType::Euler; // Use this to set the solver type.
     switch (m_SolverType)
     {
         case SolverType::Euler:
@@ -55,6 +54,50 @@ void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Fo
 
 void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt)
 {
+    int ii, size = pVector.size();
+    std::vector<Derivative> dVector1(pVector.size()); // Optimize this by reusing.
+    std::vector<Derivative> dVector2(pVector.size()); // Optimize this by reusing.
+    std::vector<Derivative> dVector3(pVector.size()); // Optimize this by reusing.
+    std::vector<Derivative> dVector4(pVector.size()); // Optimize this by reusing.
+    std::vector<Derivative> originals(pVector.size());
+    for (ii = 0; ii < size; ii++)
+    {
+        originals[ii].XDot = pVector[ii]->m_Position;
+        originals[ii].VDot = pVector[ii]->m_Velocity;
+    }
+    //step 1
+    ParticleDerivative(pVector, fVector, cVector, dVector1);
+    ScaleDerivativeVector(dVector1, dt);
+    for (ii = 0; ii < size; ii++)
+    {
+        pVector[ii]->m_Position = originals[ii].XDot + dVector1[ii].XDot/2;
+        pVector[ii]->m_Velocity = originals[ii].VDot + dVector1[ii].VDot/2;
+    }
+    //step 2
+    ParticleDerivative(pVector, fVector, cVector, dVector2);
+    ScaleDerivativeVector(dVector2, dt);
+    for (ii = 0; ii < size; ii++)
+    {
+        pVector[ii]->m_Position = originals[ii].XDot + dVector2[ii].XDot/2;
+        pVector[ii]->m_Velocity = originals[ii].VDot + dVector2[ii].VDot/2;
+    }
+    //step 3
+    ParticleDerivative(pVector, fVector, cVector, dVector3);
+    ScaleDerivativeVector(dVector3, dt);
+    for (ii = 0; ii < size; ii++)
+    {
+        pVector[ii]->m_Position = originals[ii].XDot + dVector3[ii].XDot;
+        pVector[ii]->m_Velocity = originals[ii].VDot + dVector3[ii].VDot;
+    }
+    //step 4
+    ParticleDerivative(pVector, fVector, cVector, dVector4);
+    ScaleDerivativeVector(dVector4, dt);
+    //final positions & velocities
+    for (ii = 0; ii < size; ii++)
+    {
+        pVector[ii]->m_Position = originals[ii].XDot + (dVector1[ii].XDot+2*dVector2[ii].XDot+2*dVector3[ii].XDot+dVector4[ii].XDot)/6;
+        pVector[ii]->m_Velocity = originals[ii].VDot + (dVector1[ii].VDot+2*dVector2[ii].VDot+2*dVector3[ii].VDot+dVector4[ii].VDot)/6;
+    }
     
 }
 

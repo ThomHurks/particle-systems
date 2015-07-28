@@ -34,6 +34,7 @@ static int frame_number;
 static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
+static SolverType m_SolverType;
 
 static int win_id;
 static int win_x, win_y;
@@ -86,7 +87,8 @@ static void init_system(void)
 
 	// Create three particles, attach them to each other, then add a
 	// circular wire constraint to the first.
-
+        
+        m_SolverType = SolverType::Euler;
     int particleID = 0;
 	pVector.push_back(new Particle(center + offset, particleID++));
 	pVector.push_back(new Particle(center + offset + offset2, particleID++));
@@ -214,7 +216,7 @@ static void get_from_UI ()
 	if ( i<1 || i>N || j<1 || j>N ) return;
 
 	if ( mouse_down[0] ) {
-
+            
 	}
 
 	if ( mouse_down[2] ) {
@@ -224,6 +226,9 @@ static void get_from_UI ()
 	hj = (int)(((win_y-hmy)/(float)win_y)*N);
 
 	if( mouse_release[0] ) {
+            
+            printf("test3");
+            mouse_release[0] = 0;//only need to record this once
 	}
 
 	omx = mx;
@@ -268,6 +273,15 @@ static void key_func ( unsigned char key, int x, int y )
 	case ' ':
 		dsim = !dsim;
 		break;
+        case '1':
+		m_SolverType = SolverType::Euler;
+		break;
+        case '2':
+		m_SolverType = SolverType::Midpoint;
+		break;
+        case '3':
+		m_SolverType = SolverType::RungeKutta4;
+		break;
 	}
 }
 
@@ -299,7 +313,7 @@ static void reshape_func ( int width, int height )
 
 static void idle_func ( void )
 {
-	if ( dsim ) simulation_step( pVector, fVector, cVector, dt );
+	if ( dsim ) simulation_step( pVector, fVector, cVector, dt,m_SolverType );
 	else        {get_from_UI();remap_GUI();}
 
 	glutSetWindow ( win_id );
