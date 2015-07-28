@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(tue_scg_particle_systems)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -O2 -Wall -Wno-sign-compare -Iinclude -DHAVE_CONFIG_H")
 
 set(SOURCE_FILES
     include/gfx/config.h
@@ -41,3 +41,10 @@ set(SOURCE_FILES
     TinkerToy.cpp)
 
 add_executable(tue_scg_particle_systems ${SOURCE_FILES})
+
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+find_package(PNG REQUIRED)
+include_directories( include ${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${PNG_INCLUDE_DIRS} )
+
+target_link_libraries(tue_scg_particle_systems ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${PNG_LIBRARY})
