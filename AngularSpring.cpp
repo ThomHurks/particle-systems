@@ -44,17 +44,17 @@ void AngularSpring::ApplyForce(const std::vector<Particle*> & pVector)
     double Cdotn3=y1doty2*Cdotn2/y1y2mag;
     double Cdot = (Cdotn1-Cdotn3)/y1y2mag2;
     //printf("  %f,  %f  \n",C,Cdotn1);
-    Vec2f temp1 = y1y2mag*y2;
-    Vec2f temp2 = (y1doty2*y2mag/y1mag)*y1;
-    Vec2f temp3 = (temp1-temp2);
-    Vec2f deltaCdeltaX1= temp3/ y1y2mag2;
+    Vec2f temp1 = (1.0/y1y2mag)*y2;
+    Vec2f temp2 = (y1doty2/(y1y2mag*y1mag*y1mag))*y1;
+    Vec2f deltaCdeltaX1= temp1-temp2;
     
     Vec2f baseF = (-m_ks*C-m_kd*Cdot)*deltaCdeltaX1;
+    printf("C:  %f  \n",C);
+    printf("Cdot:  %f  \n",Cdot);
     printf("1:  %f,  %f  \n",temp1[0],temp1[1]);
     printf("2:  %f,  %f  \n",temp2[0],temp2[1]);
-    printf("3:  %f,  %f  \n\n",temp3[0],temp3[1]);
     
-    m_p1->m_AccumulatedForce += baseF;
-    m_p2->m_AccumulatedForce -= baseF;
-    m_p3->m_AccumulatedForce += baseF;
+    m_p1->m_AccumulatedForce -= baseF;
+    m_p2->m_AccumulatedForce += baseF;
+    m_p3->m_AccumulatedForce -= baseF;
 }
