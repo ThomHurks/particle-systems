@@ -1,22 +1,26 @@
 #include "Solver.h"
 
-void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt, const SolverType m_SolverType)
+void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
+                     const std::vector<Force*> & cVector, const SolverType m_SolverType, double* CVector[],
+                     double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot, const double dt)
 {
     switch (m_SolverType)
     {
         case SolverType::Euler:
-            EulerSolver(pVector, fVector, cVector, dt);
+            EulerSolver(pVector, fVector, cVector, CVector, CDotVector, J, JDot,  dt);
             break;
         case SolverType::Midpoint:
-            MidpointSolver(pVector, fVector, cVector, dt);
+            MidpointSolver(pVector, fVector, cVector, CVector, CDotVector, J, JDot, dt);
             break;
         case SolverType::RungeKutta4:
-            RungeKutta4thOrderSolver(pVector, fVector, cVector, dt);
+            RungeKutta4thOrderSolver(pVector, fVector, cVector, CVector, CDotVector, J, JDot, dt);
             break;
     }
 }
 
-void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
+void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
+                 const std::vector<Force*> & cVector, double* CVector[], double* CDotVector[],
+                 BlockSparseMatrix * J, BlockSparseMatrix * JDot, const double dt)
 {
     size_t ii, size = pVector.size();
     std::vector<Vec2fTuple> dVector(size); // Optimize this by reusing.
@@ -29,7 +33,9 @@ void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force
     }
 }
 
-void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
+void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
+                    const std::vector<Force*> & cVector, double* CVector[], double* CDotVector[],
+                    BlockSparseMatrix * J, BlockSparseMatrix * JDot, const double dt)
 {
     size_t ii, size = pVector.size();
     std::vector<Vec2fTuple> dVector(size); // Optimize this by reusing.
@@ -53,7 +59,8 @@ void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Fo
 }
 
 void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
-                              const std::vector<Force*> & cVector, const double dt)
+                              const std::vector<Force*> & cVector, double* CVector[], double* CDotVector[],
+                              BlockSparseMatrix * J, BlockSparseMatrix * JDot,  const double dt)
 {
     size_t ii, size = pVector.size();
     std::vector<Vec2fTuple> dVector1(size); // Optimize this by reusing.
@@ -104,7 +111,8 @@ void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std:
     
 }
 
-void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Vec2fTuple> & dVector)
+void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
+                        const std::vector<Force*> & cVector, std::vector<Vec2fTuple> & dVector)
 {
     ClearForces(pVector);
     // First calculate forces:
@@ -120,13 +128,20 @@ void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vecto
     }
 }
 
-// Attempt at implementing equation 11, so far only set up some variables:
-void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*> & cVector)
+void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*> & cVector, double* CVector[],
+                double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot)
 {
+    // Preparing variables for equation 11:
     size_t i, n = pVector.size();
     Vec2f * q = new Vec2f[n];
     for (i = 0; i < n; ++i)
     { q[i] = pVector[i]->m_Position; }
+    double * qdot = new double[n * 2];
+    for (i = 0; i < n; ++i)
+    {
+        qdot[i * 2] = pVector[i]->m_Velocity[0];
+        qdot[(i * 2) + 1] = pVector[i]->m_Velocity[1];
+    }
     double * M = new double[n];
     for (i = 0; i < n; ++i)
     { M[i] = pVector[i]->m_Mass; }
@@ -136,6 +151,10 @@ void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*
     double * W = new double[n];
     for (i = 0; i < n; ++i)
     { W[i] = 1 / pVector[i]->m_Mass; }
+    // Start computing equation 11:
+    double * jdotqdot = new double[n];
+    JDot->matVecMult(qdot, jdotqdot);
+    // Todo: continue this calculation.
 }
 
 void ClearForces(const std::vector<Particle*> & pVector)

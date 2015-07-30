@@ -38,7 +38,9 @@ static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
 static double* * CVector;
 static double* * CDotVector;
+static BlockSparseMatrix J, JDot;
 static SolverType m_SolverType;
+
 static MouseSpringForce * msf = nullptr;
 static bool userIsMouseInteracting = false;
 static float * currentMousePosition = new float[2];
@@ -129,7 +131,6 @@ static void initTest(void)
     fVector.push_back(new AngularSpring(pVector[4], pVector[5], pVector[6], PI / 3.0, 0.0001, 0));
 
     int constraintID = 0;
-    BlockSparseMatrix J, JDot;
     int numConstraints = 1;
     CVector = new double*[numConstraints];
     CDotVector = new double*[numConstraints];
@@ -138,7 +139,7 @@ static void initTest(void)
     delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 
     // The following code is purely to test the BlockSparseMatrix functionality and can be removed later:
-    double x[] = {2};
+    double x[] = {2, 2, 3, 3};
     double r[] = {0, 0, 0, 0};
     J.matVecMult(x, r);
     int i, r_len = 4;
@@ -405,7 +406,7 @@ static void idle_func(void)
 {
     if (dsim) {
         get_from_UI();
-        simulation_step(pVector, fVector, cVector, dt, m_SolverType);
+        simulation_step(pVector, fVector, cVector, m_SolverType, CVector, CDotVector, &J, &JDot, dt);
     } else {
         get_from_UI();
         remap_GUI();
