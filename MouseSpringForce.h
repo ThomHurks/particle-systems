@@ -17,14 +17,13 @@
 class MouseSpringForce : public Force {
     
  public:
-  MouseSpringForce(Particle *p, const double dist, const double ks, const double kd);
+  MouseSpringForce(Particle *p, const double dist, const double ks, const double kd, const float mousePosition[2]);
   void draw();
   void ApplyForce(const std::vector<Particle*> & pVector);
-  void setMouseLoc(const Vec2f loc);
 
  private:
   Particle * const m_p;
   double const m_dist;      // rest length
   double const m_ks, m_kd;  // spring strength constants
-  Vec2f  m_loc;             // current mouse location
+  const float * const m_loc;       // current mouse location
 };

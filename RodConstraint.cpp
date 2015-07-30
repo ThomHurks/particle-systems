@@ -10,10 +10,10 @@ RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const doub
   m_p1(p1), m_p2(p2), m_distSquared(dist * dist), m_C(0), m_CDot(0)
 {
     // Todo: improve the code duplication in this constructor.
-    // Setup C and CDot
+    // First set up C and CDot
     CVector[id] = &m_C;
     CDotVector[id] = &m_CDot;
-    // First set up the BSM for the Jacobian:
+    // Set up the BSM for the Jacobian:
     MatrixBlock block1;
     block1.ci = id;
     block1.pi = p1->m_ID;

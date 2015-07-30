@@ -5,8 +5,9 @@
 #include <GL/glut.h>
 #endif
 
-MouseSpringForce::MouseSpringForce(Particle *p, const double dist, const double ks, const double kd) :
-  m_p(p), m_dist(dist), m_ks(ks), m_kd(kd), m_loc(Vec2f(0.0, 0.0)) {}
+MouseSpringForce::MouseSpringForce(Particle *p, const double dist, const double ks, const double kd,
+                                   const float mousePosition[2]) :
+  m_p(p), m_dist(dist), m_ks(ks), m_kd(kd), m_loc(mousePosition) {}
 
 void MouseSpringForce::draw()
 {
@@ -17,15 +18,9 @@ void MouseSpringForce::draw()
   glEnd();
 }
 
-void MouseSpringForce::setMouseLoc(const Vec2f loc)
-{
-    m_loc = loc;
-}
-
-
 void MouseSpringForce::ApplyForce(const std::vector<Particle*> & pVector)
 {
-    Vec2f l = m_loc - m_p->m_Position;
+    Vec2f l = Vec2f(m_loc) - m_p->m_Position;
     float l_magnitude = magnitude(l);
     Vec2f lDot = m_p->m_Velocity;
     Vec2f l_unit = normalized(l);
@@ -34,4 +29,3 @@ void MouseSpringForce::ApplyForce(const std::vector<Particle*> & pVector)
     
     m_p->m_AccumulatedForce += f_a;
 }
-

@@ -41,6 +41,7 @@ static double* * CDotVector;
 static SolverType m_SolverType;
 static MouseSpringForce * msf = nullptr;
 static bool userIsMouseInteracting = false;
+static float * currentMousePosition = new float[2];
 
 static int win_id;
 static int win_x, win_y;
@@ -81,6 +82,9 @@ static void free_data(void)
 
     delete[] CDotVector;
     CDotVector = nullptr;
+
+    delete[] currentMousePosition;
+    currentMousePosition = nullptr;
 }
 
 static void clear_data(void)
@@ -284,16 +288,14 @@ static void get_from_UI()
 
     if (mouse_down[0])
     {
-        if (userIsMouseInteracting)
-        {
-            msf->setMouseLoc(Vec2f(2 * (i - N / 2) / N, 2 * (j - N / 2) / N));
-        }
-        else
+        currentMousePosition[0] = 2 * (i - N / 2) / N;
+        currentMousePosition[1] = 2 * (j - N / 2) / N;
+        if (!userIsMouseInteracting)
         {
             userIsMouseInteracting = true;
             if (msf == nullptr)
             {
-                msf = new MouseSpringForce(pVector[0], 0, 0.4, 0);
+                msf = new MouseSpringForce(pVector[0], 0, 0.4, 0, currentMousePosition);
                 fVector.push_back(msf);
             }
         }
@@ -310,6 +312,8 @@ static void get_from_UI()
             { fVector.pop_back(); }
             delete msf;
             msf = nullptr;
+            currentMousePosition[0] = 0;
+            currentMousePosition[1] = 0;
         }
         mouse_release[0] = 0; //only need to record this once
     }
