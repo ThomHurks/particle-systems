@@ -298,7 +298,6 @@ static void get_from_UI()
             {
                 msf = new MouseSpringForce(pVector[0], 0, 0.4, 0);
                 fVector.push_back(msf);
-                printf("3");
             }
         }
     }
