@@ -14,7 +14,7 @@ class Force
 {
 public:
     Force();
-     ~Force();
-    virtual void draw();
-    virtual void ApplyForce(const std::vector<Particle*> & pVector);
+    virtual ~Force() = 0;
+    virtual void draw() = 0;
+    virtual void ApplyForce(const std::vector<Particle*> & pVector) = 0;
 };

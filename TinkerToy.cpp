@@ -39,7 +39,7 @@ static std::vector<Force*> cVector;
 static double* * CVector;
 static double* * CDotVector;
 static SolverType m_SolverType;
-static MouseSpringForce* msf = NULL;
+static MouseSpringForce* msf = nullptr;
 
 static int win_id;
 static int win_x, win_y;
@@ -49,8 +49,8 @@ static int mouse_shiftclick[3];
 static int omx, omy, mx, my;
 static int hmx, hmy;
 
-static RodConstraint * delete_this_dummy_rod = NULL;
-static CircularWireConstraint * delete_this_dummy_wire = NULL;
+static RodConstraint * delete_this_dummy_rod = nullptr;
+static CircularWireConstraint * delete_this_dummy_wire = nullptr;
 
 /*
 ----------------------------------------------------------------------
@@ -65,11 +65,23 @@ static void free_data(void)
     cVector.clear();
     if (delete_this_dummy_rod) {
         delete delete_this_dummy_rod;
-        delete_this_dummy_rod = NULL;
+        delete_this_dummy_rod = nullptr;
     }
     if (delete_this_dummy_wire) {
         delete delete_this_dummy_wire;
-        delete_this_dummy_wire = NULL;
+        delete_this_dummy_wire = nullptr;
+    }
+    if (msf) {
+        delete msf;
+        msf = nullptr;
+    }
+    if (CVector) {
+        delete[] CVector;
+        CVector = nullptr;
+    }
+    if (CDotVector) {
+        delete[] CDotVector;
+        CDotVector = nullptr;
     }
 }
 
@@ -273,7 +285,7 @@ static void get_from_UI()
     hj = (int) (((win_y - hmy) / (float) win_y) * N);
 
     if (mouse_down[0]) {
-        if (msf == NULL) {
+        if (msf == nullptr) {
             msf = new MouseSpringForce(pVector[0], 0, 0.4, 0);
             fVector.push_back(msf);
         }
@@ -286,7 +298,7 @@ static void get_from_UI()
 
     if (mouse_release[0]) {
         fVector.pop_back();
-        msf = NULL;
+        msf = nullptr;
         printf("test3");
         mouse_release[0] = 0; //only need to record this once
     }

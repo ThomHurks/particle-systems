@@ -13,9 +13,3 @@ Force::Force()
 
 Force::~Force()
 {}
-
-void Force::draw()
-{}
-
-void Force::ApplyForce(const std::vector<Particle*> & pVector)
-{}
