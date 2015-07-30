@@ -19,89 +19,92 @@ void simulation_step(const std::vector<Particle*> & pVector, const std::vector<F
 void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
 {
     size_t ii, size = pVector.size();
-    std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
+    std::vector<Vec2fTuple> dVector(size); // Optimize this by reusing.
     ParticleDerivative(pVector, fVector, cVector, dVector);
-    ScaleDerivativeVector(dVector, dt);
+    ScaleVectorTuples(dVector, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position += dVector[ii].XDot;
-        pVector[ii]->m_Velocity += dVector[ii].VDot;
+        pVector[ii]->m_Position += dVector[ii].vec1; // XDot
+        pVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
     }
 }
 
 void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
 {
     size_t ii, size = pVector.size();
-    std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
-    std::vector<Derivative> originals(pVector.size());
+    std::vector<Vec2fTuple> dVector(size); // Optimize this by reusing.
+    std::vector<Vec2fTuple> originals(size);
     ParticleDerivative(pVector, fVector, cVector, dVector);
-    ScaleDerivativeVector(dVector, dt / 2); //notice the /2
+    ScaleVectorTuples(dVector, dt / 2); //notice the /2
     for (ii = 0; ii < size; ii++)
     {   //Make half an euler step, save original positions and velocities.
-        originals[ii].XDot = pVector[ii]->m_Position;
-        originals[ii].VDot = pVector[ii]->m_Velocity;
-        pVector[ii]->m_Position += dVector[ii].XDot;
-        pVector[ii]->m_Velocity += dVector[ii].VDot;
+        originals[ii].vec1 = pVector[ii]->m_Position;
+        originals[ii].vec2 = pVector[ii]->m_Velocity;
+        pVector[ii]->m_Position += dVector[ii].vec1; // XDot
+        pVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
     }
     ParticleDerivative(pVector, fVector, cVector, dVector);
-    ScaleDerivativeVector(dVector, dt);
+    ScaleVectorTuples(dVector, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].XDot + dVector[ii].XDot;
-        pVector[ii]->m_Velocity = originals[ii].VDot + dVector[ii].VDot;
+        pVector[ii]->m_Position = originals[ii].vec1 + dVector[ii].vec1; // XDot
+        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector[ii].vec2; // VDot
     }
 }
 
-void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
+void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
+                              const std::vector<Force*> & cVector, const double dt)
 {
     size_t ii, size = pVector.size();
-    std::vector<Derivative> dVector1(pVector.size()); // Optimize this by reusing.
-    std::vector<Derivative> dVector2(pVector.size()); // Optimize this by reusing.
-    std::vector<Derivative> dVector3(pVector.size()); // Optimize this by reusing.
-    std::vector<Derivative> dVector4(pVector.size()); // Optimize this by reusing.
-    std::vector<Derivative> originals(pVector.size());
+    std::vector<Vec2fTuple> dVector1(size); // Optimize this by reusing.
+    std::vector<Vec2fTuple> dVector2(size); // Optimize this by reusing.
+    std::vector<Vec2fTuple> dVector3(size); // Optimize this by reusing.
+    std::vector<Vec2fTuple> dVector4(size); // Optimize this by reusing.
+    std::vector<Vec2fTuple> originals(size);
     for (ii = 0; ii < size; ii++)
     {
-        originals[ii].XDot = pVector[ii]->m_Position;
-        originals[ii].VDot = pVector[ii]->m_Velocity;
+        originals[ii].vec1 = pVector[ii]->m_Position;
+        originals[ii].vec2 = pVector[ii]->m_Velocity;
     }
     //step 1
     ParticleDerivative(pVector, fVector, cVector, dVector1);
-    ScaleDerivativeVector(dVector1, dt);
+    ScaleVectorTuples(dVector1, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].XDot + dVector1[ii].XDot/2;
-        pVector[ii]->m_Velocity = originals[ii].VDot + dVector1[ii].VDot/2;
+        pVector[ii]->m_Position = originals[ii].vec1 + dVector1[ii].vec1 /2; // XDot
+        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector1[ii].vec2 /2; // VDot
     }
     //step 2
     ParticleDerivative(pVector, fVector, cVector, dVector2);
-    ScaleDerivativeVector(dVector2, dt);
+    ScaleVectorTuples(dVector2, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].XDot + dVector2[ii].XDot/2;
-        pVector[ii]->m_Velocity = originals[ii].VDot + dVector2[ii].VDot/2;
+        pVector[ii]->m_Position = originals[ii].vec1 + dVector2[ii].vec1 /2; // XDot
+        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector2[ii].vec2 /2; // VDot
     }
     //step 3
     ParticleDerivative(pVector, fVector, cVector, dVector3);
-    ScaleDerivativeVector(dVector3, dt);
+    ScaleVectorTuples(dVector3, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].XDot + dVector3[ii].XDot;
-        pVector[ii]->m_Velocity = originals[ii].VDot + dVector3[ii].VDot;
+        pVector[ii]->m_Position = originals[ii].vec1 + dVector3[ii].vec1; // XDot
+        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector3[ii].vec2; // VDot
     }
     //step 4
     ParticleDerivative(pVector, fVector, cVector, dVector4);
-    ScaleDerivativeVector(dVector4, dt);
+    ScaleVectorTuples(dVector4, dt);
     //final positions & velocities
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].XDot + (dVector1[ii].XDot+2*dVector2[ii].XDot+2*dVector3[ii].XDot+dVector4[ii].XDot)/6;
-        pVector[ii]->m_Velocity = originals[ii].VDot + (dVector1[ii].VDot+2*dVector2[ii].VDot+2*dVector3[ii].VDot+dVector4[ii].VDot)/6;
+        pVector[ii]->m_Position = originals[ii].vec1 +
+                (dVector1[ii].vec1 +2*dVector2[ii].vec1 +2*dVector3[ii].vec1 +dVector4[ii].vec1)/6; // XDot
+        pVector[ii]->m_Velocity = originals[ii].vec2 +
+                (dVector1[ii].vec2 +2*dVector2[ii].vec2 +2*dVector3[ii].vec2 +dVector4[ii].vec2)/6; // VDot
     }
     
 }
 
-void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Derivative> & dVector)
+void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Vec2fTuple> & dVector)
 {
     ClearForces(pVector);
     // First calculate forces:
@@ -112,8 +115,8 @@ void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vecto
     size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
     {
-        dVector[i].XDot = pVector[i]->m_Velocity;
-        dVector[i].VDot = pVector[i]->m_AccumulatedForce / pVector[i]->m_Mass;
+        dVector[i].vec1 = pVector[i]->m_Velocity; // XDot
+        dVector[i].vec2 = pVector[i]->m_AccumulatedForce / pVector[i]->m_Mass; // VDot
     }
 }
 
@@ -153,13 +156,13 @@ void CalculateForces(const std::vector<Particle*> & pVector, const std::vector<F
     }
 }
 
-void ScaleDerivativeVector(std::vector<Derivative> & dVector, const double scaleFactor)
+void ScaleVectorTuples(std::vector<Vec2fTuple> &dVector, const double scaleFactor)
 {
     size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
     {
-        dVector[i].XDot *= scaleFactor;
-        dVector[i].VDot *= scaleFactor;
+        dVector[i].vec1 *= scaleFactor;
+        dVector[i].vec2 *= scaleFactor;
     }
 }
 

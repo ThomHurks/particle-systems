@@ -10,9 +10,10 @@
 #include "Force.h"
 #include <vector>
 
-struct Derivative {
-    Vec2f XDot;
-    Vec2f VDot;
+struct Vec2fTuple
+{
+    Vec2f vec1;
+    Vec2f vec2;
 };
 
 enum class SolverType { Euler, Midpoint, RungeKutta4 };
@@ -25,10 +26,10 @@ void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Fo
 
 void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt);
 
-void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Derivative> & dVector);
+void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, std::vector<Vec2fTuple> & dVector);
 
 void ClearForces(const std::vector<Particle*> & pVector);
 
 void CalculateForces(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector);
 
-void ScaleDerivativeVector(std::vector<Derivative> & dVector, const double scaleFactor);
+void ScaleVectorTuples(std::vector<Vec2fTuple> &dVector, const double scaleFactor);
