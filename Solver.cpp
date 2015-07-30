@@ -1,6 +1,6 @@
 #include "Solver.h"
 
-void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt, const SolverType m_SolverType)
+void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt, const SolverType m_SolverType)
 {
     switch (m_SolverType)
     {
@@ -16,9 +16,9 @@ void simulation_step(const std::vector<Particle*> & pVector, const std::vector<F
     }
 }
 
-void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt)
+void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
 {
-    int ii, size = pVector.size();
+    size_t ii, size = pVector.size();
     std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
     ParticleDerivative(pVector, fVector, cVector, dVector);
     ScaleDerivativeVector(dVector, dt);
@@ -29,9 +29,9 @@ void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force
     }
 }
 
-void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt)
+void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
 {
-    int ii, size = pVector.size();
+    size_t ii, size = pVector.size();
     std::vector<Derivative> dVector(pVector.size()); // Optimize this by reusing.
     std::vector<Derivative> originals(pVector.size());
     ParticleDerivative(pVector, fVector, cVector, dVector);
@@ -52,9 +52,9 @@ void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Fo
     }
 }
 
-void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const float dt)
+void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector, const std::vector<Force*> & cVector, const double dt)
 {
-    int ii, size = pVector.size();
+    size_t ii, size = pVector.size();
     std::vector<Derivative> dVector1(pVector.size()); // Optimize this by reusing.
     std::vector<Derivative> dVector2(pVector.size()); // Optimize this by reusing.
     std::vector<Derivative> dVector3(pVector.size()); // Optimize this by reusing.
@@ -109,8 +109,7 @@ void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vecto
     // Then calculate constraint forces:
     CalculateForces(pVector, cVector);
     // Then derivatives:
-    int n = dVector.size();
-    int i;
+    size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
     {
         dVector[i].XDot = pVector[i]->m_Velocity;
@@ -118,10 +117,27 @@ void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vecto
     }
 }
 
+// Attempt at implementing equation 11, so far only set up some variables:
+void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*> & cVector)
+{
+    size_t i, n = pVector.size();
+    Vec2f * q = new Vec2f[n];
+    for (i = 0; i < n; ++i)
+    { q[i] = pVector[i]->m_Position; }
+    double * M = new double[n];
+    for (i = 0; i < n; ++i)
+    { M[i] = pVector[i]->m_Mass; }
+    Vec2f * Q = new Vec2f[n];
+    for (i = 0; i < n; ++i)
+    { Q[i] = pVector[i]->m_AccumulatedForce; }
+    double * W = new double[n];
+    for (i = 0; i < n; ++i)
+    { W[i] = 1 / pVector[i]->m_Mass; }
+}
+
 void ClearForces(const std::vector<Particle*> & pVector)
 {
-    int i;
-    int n = pVector.size();
+    size_t i, n = pVector.size();
     for (i = 0; i < n; ++i)
     {
         pVector[i]->m_AccumulatedForce = 0;
@@ -130,18 +146,16 @@ void ClearForces(const std::vector<Particle*> & pVector)
 
 void CalculateForces(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector)
 {
-    int i;
-    int n = fVector.size();
+    size_t i, n = fVector.size();
     for (i = 0; i < n; ++i)
     {
         fVector[i]->ApplyForce(pVector);
     }
 }
 
-void ScaleDerivativeVector(std::vector<Derivative> & dVector, const float scaleFactor)
+void ScaleDerivativeVector(std::vector<Derivative> & dVector, const double scaleFactor)
 {
-    int i;
-    int n = dVector.size();
+    size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
     {
         dVector[i].XDot *= scaleFactor;

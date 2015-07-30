@@ -28,7 +28,7 @@
 /* global variables */
 
 static int N;
-static float dt, d;
+static double dt, d;
 static int dsim;
 static int dump_frames;
 static int frame_number;
@@ -36,6 +36,8 @@ static int frame_number;
 static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
+static double* * CVector;
+static double* * CDotVector;
 static SolverType m_SolverType;
 static MouseSpringForce* msf = NULL;
 
@@ -73,18 +75,16 @@ static void free_data(void)
 
 static void clear_data(void)
 {
-    int ii, size = pVector.size();
+    size_t ii, size = pVector.size();
 
     for (ii = 0; ii < size; ii++) {
         pVector[ii]->reset();
     }
 }
 
-
-
 static void initTest(void)
 {
-    const double dist = 0.2;
+    const float dist = 0.2;
     const Vec2f center(0.0, 0.0);
     const Vec2f offset(dist, 0.0);
     const Vec2f offset2(dist, dist);
@@ -115,15 +115,18 @@ static void initTest(void)
     fVector.push_back(new AngularSpring(pVector[4], pVector[5], pVector[6], PI / 3.0, 0.0001, 0));
 
     int constraintID = 0;
-    BlockSparseMatrix bsp;
-    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, &bsp, constraintID++));
+    BlockSparseMatrix J, JDot;
+    int numConstraints = 1;
+    CVector = new double*[numConstraints];
+    CDotVector = new double*[numConstraints];
+    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, CVector, CDotVector, &J, &JDot , constraintID++));
     //delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
     delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 
     // The following code is purely to test the BlockSparseMatrix functionality and can be removed later:
     double x[] = {2};
     double r[] = {0, 0, 0, 0};
-    bsp.matVecMult(x, r);
+    J.matVecMult(x, r);
     int i, r_len = 4;
     for (i = 0; i < r_len; ++i) {
         std::cout << r[i];
@@ -132,8 +135,8 @@ static void initTest(void)
 
 static void initCloth(void)
 {
-    const double dist = 0.1;
-    const Vec2f topleft(-0.75, 0.75);
+    const float dist = 0.1f;
+    const Vec2f topLeft(-0.75f, 0.75f);
     const Vec2f offset(dist, 0.0);
     const Vec2f offset2(0.0, -dist);
     const int dim = 15;
@@ -144,7 +147,7 @@ static void initCloth(void)
     //init particles
     for (i = 0; i <= dim; i++) {
         for (j = 0; j <= dim; j++) {
-            pVector.push_back(new Particle(topleft + offset * i + offset2*j, particleID++));
+            pVector.push_back(new Particle(topLeft + offset * i + offset2*j, particleID++));
         }
     }
     double ks = 0.01;
@@ -193,11 +196,13 @@ static void post_display(void)
     if (dump_frames) {
         const int FRAME_INTERVAL = 4;
         if ((frame_number % FRAME_INTERVAL) == 0) {
-            const unsigned int w = glutGet(GLUT_WINDOW_WIDTH);
-            const unsigned int h = glutGet(GLUT_WINDOW_HEIGHT);
+            const int w = glutGet(GLUT_WINDOW_WIDTH);
+            const int h = glutGet(GLUT_WINDOW_HEIGHT);
+            if (w <= 0 || h <= 0)
+            { exit(-1); }
             unsigned char * buffer = (unsigned char *) malloc(w * h * 4 * sizeof (unsigned char));
             if (!buffer)
-                exit(-1);
+            { exit(-1); }
             // glRasterPos2i(0, 0);
             glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
             static char filename[80];
@@ -215,17 +220,16 @@ static void post_display(void)
 
 static void draw_particles(void)
 {
-    int size = pVector.size();
+    size_t ii, size = pVector.size();
 
-    for (int ii = 0; ii < size; ii++) {
+    for (ii = 0; ii < size; ii++) {
         pVector[ii]->draw();
     }
 }
 
 static void draw_forces(void)
 {
-    int i;
-    int n = fVector.size();
+    size_t i, n = fVector.size();
     for (i = 0; i < n; ++i) {
         fVector[i]->draw();
     }
@@ -233,8 +237,7 @@ static void draw_forces(void)
 
 static void draw_constraints(void)
 {
-    int i;
-    int n = cVector.size();
+    size_t i, n = cVector.size();
     for (i = 0; i < n; ++i) {
         cVector[i]->draw();
     }
@@ -294,7 +297,7 @@ static void get_from_UI()
 
 static void remap_GUI()
 {
-    int ii, size = pVector.size();
+    size_t ii, size = pVector.size();
     for (ii = 0; ii < size; ii++) {
         pVector[ii]->reset();
     }
@@ -322,8 +325,7 @@ static void key_func(unsigned char key, int x, int y)
         case 'q':
         case 'Q':
             free_data();
-            exit(0);
-            break;
+            exit(0); // implicit break
 
         case ' ':
             dsim = !dsim;
@@ -336,6 +338,9 @@ static void key_func(unsigned char key, int x, int y)
             break;
         case '3':
             m_SolverType = SolverType::RungeKutta4;
+            break;
+        default:
+            std::cout << "Invalid input!";
             break;
     }
 }
@@ -458,7 +463,9 @@ int main(int argc, char ** argv)
     dump_frames = 0;
     frame_number = 0;
 
-    initCloth();
+    // TODO: Make cloth and test interchangeable at runtime.
+    //initCloth();
+    initTest();
 
     win_x = 512;
     win_y = 512;
