@@ -39,7 +39,7 @@ static std::vector<Force*> cVector;
 static double* * CVector;
 static double* * CDotVector;
 static SolverType m_SolverType;
-static MouseSpringForce* msf = nullptr;
+static MouseSpringForce * msf = nullptr;
 static bool userIsMouseInteracting = false;
 
 static int win_id;
@@ -61,29 +61,26 @@ free/clear/allocate simulation data
 
 static void free_data(void)
 {
+    // Clear() also calls destructors of the objects inside the vectors.
     pVector.clear();
     fVector.clear();
     cVector.clear();
-    if (delete_this_dummy_rod) {
-        delete delete_this_dummy_rod;
-        delete_this_dummy_rod = nullptr;
-    }
-    if (delete_this_dummy_wire) {
-        delete delete_this_dummy_wire;
-        delete_this_dummy_wire = nullptr;
-    }
-    if (msf) {
-        delete msf;
-        msf = nullptr;
-    }
-    if (CVector) {
-        delete[] CVector;
-        CVector = nullptr;
-    }
-    if (CDotVector) {
-        delete[] CDotVector;
-        CDotVector = nullptr;
-    }
+
+    delete delete_this_dummy_rod;
+    delete_this_dummy_rod = nullptr;
+
+    delete delete_this_dummy_wire;
+    delete_this_dummy_wire = nullptr;
+
+    delete msf;
+    msf = nullptr;
+
+    // Make sure arrays are deleted with correct delete[] syntax:
+    delete[] CVector;
+    CVector = nullptr;
+
+    delete[] CDotVector;
+    CDotVector = nullptr;
 }
 
 static void clear_data(void)

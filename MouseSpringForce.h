@@ -24,7 +24,7 @@ class MouseSpringForce : public Force {
 
  private:
   Particle * const m_p;   // particle 1
-  Vec2f  m_loc;   // mouse location 
   double const m_dist;     // rest length
   double const m_ks, m_kd; // spring strength constants
+  Vec2f  m_loc;   // mouse location
 };
