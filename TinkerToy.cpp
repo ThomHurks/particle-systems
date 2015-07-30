@@ -40,6 +40,7 @@ static double* * CVector;
 static double* * CDotVector;
 static SolverType m_SolverType;
 static MouseSpringForce* msf = nullptr;
+static bool userIsMouseInteracting = false;
 
 static int win_id;
 static int win_x, win_y;
@@ -284,23 +285,36 @@ static void get_from_UI()
     hi = (int) ((hmx / (float) win_x) * N);
     hj = (int) (((win_y - hmy) / (float) win_y) * N);
 
-    if (mouse_down[0]) {
-        if (msf == nullptr) {
-            msf = new MouseSpringForce(pVector[0], 0, 0.4, 0);
-            fVector.push_back(msf);
+    if (mouse_down[0])
+    {
+        if (userIsMouseInteracting)
+        {
+            msf->setMouseLoc(Vec2f(2 * (i - N / 2) / N, 2 * (j - N / 2) / N));
         }
-        msf->setMouseLoc(Vec2f(2 * (i - N / 2) / N, 2 * (j - N / 2) / N));
-
+        else
+        {
+            userIsMouseInteracting = true;
+            if (msf == nullptr)
+            {
+                msf = new MouseSpringForce(pVector[0], 0, 0.4, 0);
+                fVector.push_back(msf);
+                printf("3");
+            }
+        }
     }
 
-    if (mouse_down[2]) {
-    }
+    if (mouse_down[2]) {}
 
-    if (mouse_release[0]) {
-        fVector.pop_back();
-        delete msf;
-        msf = nullptr;
-        printf("test3");
+    if (mouse_release[0])
+    {
+        if (userIsMouseInteracting)
+        {
+            userIsMouseInteracting = false;
+            if (fVector.size() > 0)
+            { fVector.pop_back(); }
+            delete msf;
+            msf = nullptr;
+        }
         mouse_release[0] = 0; //only need to record this once
     }
 

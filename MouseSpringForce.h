@@ -17,7 +17,7 @@
 class MouseSpringForce : public Force {
     
  public:
-  MouseSpringForce(Particle *p, double dist, double ks, double kd);
+  MouseSpringForce(Particle *p, const double dist, const double ks, const double kd);
   void draw();
   void ApplyForce(const std::vector<Particle*> & pVector);
   void setMouseLoc(const Vec2f loc);
