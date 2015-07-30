@@ -23,8 +23,8 @@ class MouseSpringForce : public Force {
   void setMouseLoc(const Vec2f loc);
 
  private:
-  Particle * const m_p;   // particle 1
-  double const m_dist;     // rest length
-  double const m_ks, m_kd; // spring strength constants
-  Vec2f  m_loc;   // mouse location
+  Particle * const m_p;
+  double const m_dist;      // rest length
+  double const m_ks, m_kd;  // spring strength constants
+  Vec2f  m_loc;             // current mouse location
 };
