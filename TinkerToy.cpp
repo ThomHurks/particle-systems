@@ -298,6 +298,7 @@ static void get_from_UI()
 
     if (mouse_release[0]) {
         fVector.pop_back();
+        delete msf;
         msf = nullptr;
         printf("test3");
         mouse_release[0] = 0; //only need to record this once
