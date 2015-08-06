@@ -29,10 +29,10 @@ public:
     TVec2(T x, T y) { elt[0]=x; elt[1]=y; }
 
     // Copy constructors & assignment operators
-    template<class U> TVec2(const TVec2<U>& v) { *this = v; }
+    template<class U> TVec2(const TVec2<U>& v) { elt[0]=v[0]; elt[1]=v[1]; }
     template<class U> TVec2(const U v[2]) { elt[0]=v[0]; elt[1]=v[1]; }
     template<class U> TVec2& operator=(const TVec2<U>& v)
-	{ elt[0]=v[0];  elt[1]=v[1];  return *this; }
+	{ elt[0]=v[0]; elt[1]=v[1]; return *this; }
 
 
     // Descriptive interface
@@ -56,8 +56,8 @@ public:
     //
     inline TVec2& operator+=(const TVec2& v);
     inline TVec2& operator-=(const TVec2& v);
-    inline TVec2& operator*=(T s);
-    inline TVec2& operator/=(T s);
+    inline TVec2& operator*=(const T s);
+    inline TVec2& operator/=(const T s);
 };
 
     ////////////////////////////////////////////////////////////////////////
@@ -71,10 +71,10 @@ public:
     template<class T> inline TVec2<T>& TVec2<T>::operator-=(const TVec2<T>& v)
 	{ elt[0] -= v[0];   elt[1] -= v[1];   return *this; }
 
-    template<class T> inline TVec2<T>& TVec2<T>::operator*=(T s)
+    template<class T> inline TVec2<T>& TVec2<T>::operator*=(const T s)
 	{ elt[0] *= s;   elt[1] *= s;   return *this; }
 
-    template<class T> inline TVec2<T>& TVec2<T>::operator/=(T s)
+    template<class T> inline TVec2<T>& TVec2<T>::operator/=(const T s)
 	{ elt[0] /= s;   elt[1] /= s;   return *this; }
 
     ////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ public:
 #endif
 
     template<class T> inline T operator*(const TVec2<T> &u, const TVec2<T>& v)
-	{ return u[0]*v[0] + u[1]*v[1]; }
+	{ return (u[0]*v[0]) + (u[1]*v[1]); }
 
     template<class T> inline TVec2<T> perp(const TVec2<T> &v)
 	{ return TVec2<T>(v[1], -v[0]); }
@@ -142,15 +142,13 @@ public:
     template<class T> inline T sqrMagnitude(const TVec2<T>& v)  { return norm2(v); }
     template<class T> inline T Dot(const TVec2<T> &u, const TVec2<T> &v)  { return (u[0]*v[0]) + (u[1]*v[1]); }
 
-    template<class T> inline TVec2<T> unitize(const TVec2<T>& v)
+    template<class T> inline TVec2<T> normalized(const TVec2<T>& v)
     {
         TVec2<T> u = v;
         T l = norm2(u);
         if( l != 1.0 && l != 0.0 ) { u /= sqrt(l); }
         return u;
     }
-
-    template<class T> inline TVec2<T> normalized(const TVec2<T>& v) { return unitize(v); }
 
     template<class T> inline TVec2<T> RotateAroundPoint(const TVec2<T> &pivot, const TVec2<T> &p, const double angle)
     {

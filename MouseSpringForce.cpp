@@ -25,7 +25,7 @@ void MouseSpringForce::ApplyForce(const std::vector<Particle*> & pVector)
     Vec2f lDot = m_p->m_Velocity;
     Vec2f l_unit = normalized(l);
     
-    Vec2f f_a = (m_ks * (l_magnitude - m_dist) + m_kd * ((lDot * l) / l_magnitude)) * l_unit;
+    Vec2f f_a = (m_ks * (l_magnitude - m_dist) + m_kd * (Dot(lDot, l) / l_magnitude)) * l_unit;
     
     m_p->m_AccumulatedForce += f_a;
 }
