@@ -162,7 +162,7 @@ void ClearForces(const std::vector<Particle*> & pVector)
     size_t i, n = pVector.size();
     for (i = 0; i < n; ++i)
     {
-        pVector[i]->m_AccumulatedForce = 0;
+        pVector[i]->m_AccumulatedForce = Vec2f(0, 0);
     }
 }
 

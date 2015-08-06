@@ -25,7 +25,7 @@ void SpringForce::ApplyForce(const std::vector<Particle*> & pVector)
     Vec2f lDot = m_p1->m_Velocity - m_p2->m_Velocity;
     Vec2f l_unit = normalized(l);
     
-    Vec2f f_a = -(m_ks * (l_magnitude - m_dist) + m_kd * ((lDot * l) / l_magnitude)) * l_unit;
+    Vec2f f_a = -(m_ks * (l_magnitude - m_dist) + m_kd * (Dot(lDot, l) / l_magnitude)) * l_unit;
     Vec2f f_b = -f_a;
     
     m_p1->m_AccumulatedForce += f_a;

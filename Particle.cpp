@@ -22,7 +22,7 @@ void Particle::reset()
 {
 	m_Position = m_ConstructPos;
 	m_Velocity = Vec2f(0.0, 0.0);
-    m_AccumulatedForce = 0;
+    m_AccumulatedForce = Vec2f(0, 0);
 }
 void Particle::draw()
 {
