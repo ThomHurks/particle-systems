@@ -1,4 +1,5 @@
 #include "AngularSpring.h"
+
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -7,8 +8,8 @@
 
 #include <stdio.h>
 
-AngularSpring::AngularSpring(Particle *p1, Particle * p2, Particle *p3, double angle, double ks, double kd) :
-m_p1(p1), m_p2(p2), m_p3(p3), m_angle(angle), m_ks(ks), m_kd(kd)
+AngularSpring::AngularSpring(Particle *massPoint, Particle * p1, Particle *p2, double angle, double ks, double kd) :
+m_MassPoint(massPoint), m_p1(p1), m_p2(p2), m_angle(angle), m_ks(ks), m_kd(kd)
 {
 }
 
@@ -16,45 +17,46 @@ void AngularSpring::draw()
 {
     glBegin(GL_LINES);
     glColor3f(0.3, 0.3, 1);
+    glVertex2f(m_MassPoint->m_Position[0], m_MassPoint->m_Position[1]);
     glVertex2f(m_p1->m_Position[0], m_p1->m_Position[1]);
-    glVertex2f(m_p2->m_Position[0], m_p2->m_Position[1]);
     glEnd();
     
     glBegin(GL_LINES);
     glColor3f(0.3, 0.3, 1);
+    glVertex2f(m_MassPoint->m_Position[0], m_MassPoint->m_Position[1]);
     glVertex2f(m_p2->m_Position[0], m_p2->m_Position[1]);
-    glVertex2f(m_p3->m_Position[0], m_p3->m_Position[1]);
     glEnd();
 }
 
 void AngularSpring::ApplyForce(const std::vector<Particle*> & pVector)
 {
-    Vec2f y1 = m_p2->m_Position-m_p1->m_Position;
-    Vec2f y2 = m_p3->m_Position-m_p2->m_Position;
-    Vec2f y1dot = m_p2->m_Velocity-m_p1->m_Velocity;
-    Vec2f y2dot = m_p3->m_Velocity-m_p2->m_Velocity;
-    double y1doty2 = y1*y2;
-    double y1mag = magnitude(y1);
-    double y2mag = magnitude(y2);
-    double y1y2mag = y1mag*y2mag;
-    double y1y2mag2 = y1y2mag*y1y2mag;
-    double C = y1doty2/y1y2mag-cos(m_angle);
-    double Cdotn1=((y1dot*y2)+(y1*y2dot))*y1y2mag;
-    double Cdotn2=(y1dot*y1)*(y2*y2)+(y1*y1)*(y2dot*y2);
-    double Cdotn3=y1doty2*Cdotn2/y1y2mag;
-    double Cdot = (Cdotn1-Cdotn3)/y1y2mag2;
-    //printf("  %f,  %f  \n",C,Cdotn1);
-    Vec2f temp1 = (1.0/y1y2mag)*y2;
-    Vec2f temp2 = (y1doty2/(y1y2mag*y1mag*y1mag))*y1;
-    Vec2f deltaCdeltaX1= temp1-temp2;
-    
-    Vec2f baseF = (-m_ks*C-m_kd*Cdot)*deltaCdeltaX1;
-    printf("C:  %f  \n",C);
-    printf("Cdot:  %f  \n",Cdot);
-    printf("1:  %f,  %f  \n",temp1[0],temp1[1]);
-    printf("2:  %f,  %f  \n",temp2[0],temp2[1]);
-    
-    m_p1->m_AccumulatedForce -= baseF;
-    m_p2->m_AccumulatedForce += baseF;
-    m_p3->m_AccumulatedForce -= baseF;
+    Vec2f S1 = m_p1->m_Position - m_MassPoint->m_Position;
+    Vec2f S2 = m_p2->m_Position - m_MassPoint->m_Position;
+
+    float S1_mag = magnitude(S1);
+    float S2_mag = magnitude(S2);
+
+    double currentAngle = acos(Dot(S1, S2) / (S1_mag * S2_mag));
+    double angleDelta = (m_angle - currentAngle) / 2;
+
+    Vec2f t1 = RotateAroundPoint(m_MassPoint->m_Position, m_p1->m_Position, -angleDelta);
+    Vec2f t2 = RotateAroundPoint(m_MassPoint->m_Position, m_p2->m_Position, angleDelta);
+
+    Vec2f d1 = t1 - m_p1->m_Position;
+    Vec2f d2 = t2 - m_p2->m_Position;
+
+    float d1_mag = magnitude(d1);
+    float d2_mag = magnitude(d2);
+
+    Vec2f I1_Dot = m_p1->m_Velocity;
+    Vec2f I2_Dot = m_p2->m_Velocity;
+
+    Vec2f F1 = -((m_ks * d1_mag) + m_kd * (Dot(I1_Dot, d1) / d1_mag)) * normalized(d1);
+    Vec2f F2 = -((m_ks * d2_mag) + m_kd * (Dot(I2_Dot, d2) / d2_mag)) * normalized(d2);
+
+    if (!isnan(F1))
+    {  m_p1->m_AccumulatedForce += F1; }
+
+    if (!isnan(F2))
+    { m_p2->m_AccumulatedForce += F2; }
 }
