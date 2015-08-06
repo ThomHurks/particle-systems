@@ -137,15 +137,6 @@ static void initTest(void)
     cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, CVector, CDotVector, &J, &JDot , constraintID++));
     //delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
     delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
-
-    // The following code is purely to test the BlockSparseMatrix functionality and can be removed later:
-    double x[] = {2, 2, 3, 3};
-    double r[] = {0, 0, 0, 0};
-    J.matVecMult(x, r);
-    int i, r_len = 4;
-    for (i = 0; i < r_len; ++i) {
-        std::cout << r[i];
-    } // Should print out "0066" to console if everything works.
 }
 
 static void initCloth(void)

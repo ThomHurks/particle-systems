@@ -30,7 +30,7 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])
     }
 }
 
-void BlockSparseMatrix::AddBlock(MatrixBlock block)
+void BlockSparseMatrix::AddNewBlock(const int ci, const int pi, double * const data)
 {
-    m_Matrix.push_back(block);
+    m_Matrix.push_back(MatrixBlock(ci, pi, data));
 }
