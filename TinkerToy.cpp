@@ -134,12 +134,12 @@ static void initTest(void)
     int numConstraints = 1;
     CVector = new double*[numConstraints];
     CDotVector = new double*[numConstraints];
-    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, CVector, CDotVector, &J, &JDot , constraintID++));
+    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, CVector, CDotVector, &J, &JDot, constraintID++));
     //delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
     delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 }
 
-static void initCloth(void)
+static void initCloth(bool crossFibers)
 {
     const float dist = 0.1f;
     const Vec2f topLeft(-0.75f, 0.75f);
@@ -159,7 +159,6 @@ static void initCloth(void)
     double ks = 0.01;
     double kd = 0.01;
     double rest = 0.075;
-    bool crossFibers = true;
     for (i = 0; i < dim; i++) {
         for (j = 0; j < dim; j++) {
             int cur = j * (dim + 1) + i;
@@ -178,22 +177,21 @@ static void initCloth(void)
         int below = cur2 + 1;
         fVector.push_back(new SpringForce(pVector[cur2], pVector[below], rest, ks, kd));
     }
-    if(crossFibers)
-    {
+    if (crossFibers) {
         for (i = 0; i < dim; i++) {
-        for (j = 0; j < dim; j++) {
-            int cur = j * (dim + 1) + i;
-            int rightbelow = cur + dim + 2;
-            fVector.push_back(new SpringForce(pVector[cur], pVector[rightbelow], rest, ks, kd));
+            for (j = 0; j < dim; j++) {
+                int cur = j * (dim + 1) + i;
+                int rightbelow = cur + dim + 2;
+                fVector.push_back(new SpringForce(pVector[cur], pVector[rightbelow], rest, ks, kd));
+            }
         }
-    }
         for (i = 1; i <= dim; i++) {
-        for (j = 0; j < dim; j++) {
-            int cur = j * (dim + 1) + i;
-            int rightabove = cur + dim;
-            fVector.push_back(new SpringForce(pVector[cur], pVector[rightabove], rest, ks, kd));
+            for (j = 0; j < dim; j++) {
+                int cur = j * (dim + 1) + i;
+                int rightabove = cur + dim;
+                fVector.push_back(new SpringForce(pVector[cur], pVector[rightabove], rest, ks, kd));
+            }
         }
-    }
     }
 }
 
@@ -221,11 +219,13 @@ static void post_display(void)
         if ((frame_number % FRAME_INTERVAL) == 0) {
             const int w = glutGet(GLUT_WINDOW_WIDTH);
             const int h = glutGet(GLUT_WINDOW_HEIGHT);
-            if (w <= 0 || h <= 0)
-            { exit(-1); }
+            if (w <= 0 || h <= 0) {
+                exit(-1);
+            }
             unsigned char * buffer = (unsigned char *) malloc(w * h * 4 * sizeof (unsigned char));
-            if (!buffer)
-            { exit(-1); }
+            if (!buffer) {
+                exit(-1);
+            }
             // glRasterPos2i(0, 0);
             glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
             static char filename[80];
@@ -295,30 +295,27 @@ static void get_from_UI()
     hi = (int) ((hmx / (float) win_x) * N);
     hj = (int) (((win_y - hmy) / (float) win_y) * N);
 
-    if (mouse_down[0])
-    {
+    if (mouse_down[0]) {
         currentMousePosition[0] = 2 * (i - N / 2) / N;
         currentMousePosition[1] = 2 * (j - N / 2) / N;
-        if (!userIsMouseInteracting)
-        {
+        if (!userIsMouseInteracting) {
             userIsMouseInteracting = true;
-            if (msf == nullptr)
-            {
+            if (msf == nullptr) {
                 msf = new MouseSpringForce(pVector[0], 0, 0.4, 0, currentMousePosition);
                 fVector.push_back(msf);
             }
         }
     }
 
-    if (mouse_down[2]) {}
+    if (mouse_down[2]) {
+    }
 
-    if (mouse_release[0])
-    {
-        if (userIsMouseInteracting)
-        {
+    if (mouse_release[0]) {
+        if (userIsMouseInteracting) {
             userIsMouseInteracting = false;
-            if (fVector.size() > 0)
-            { fVector.pop_back(); }
+            if (fVector.size() > 0) {
+                fVector.pop_back();
+            }
             delete msf;
             msf = nullptr;
             currentMousePosition[0] = 0;
@@ -375,8 +372,23 @@ static void key_func(unsigned char key, int x, int y)
         case '3':
             m_SolverType = SolverType::RungeKutta4;
             break;
+        case '!':
+            dsim = false;
+            free_data();
+            initTest();
+            break;
+            case '@':
+            dsim = false;
+            free_data();
+            initCloth(false);
+            break;
+        case '#':
+            dsim = false;
+            free_data();
+            initCloth(true);
+            break;
         default:
-            std::cout << "Invalid input!";
+            std::cout << "Invalid input!\n";
             break;
     }
 }
@@ -493,15 +505,15 @@ int main(int argc, char ** argv)
     printf("\n\nHow to use this application:\n\n");
     printf("\t Toggle construction/simulation display with the spacebar key\n");
     printf("\t Dump frames by pressing the 'd' key\n");
+    printf("\t Change integratuion scheme by pressing 1,2  or 3 for Euler, Midpoint or RK4 respectively\n");
+    printf("\t Change initial scheme by pressing !,@  or # \n");
     printf("\t Quit by pressing the 'q' key\n");
 
     dsim = 0;
     dump_frames = 0;
     frame_number = 0;
 
-    // TODO: Make cloth and test interchangeable at runtime.
-    //initCloth();
-    initCloth();
+    initTest();
 
     win_x = 512;
     win_y = 512;
