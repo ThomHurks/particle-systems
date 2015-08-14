@@ -140,7 +140,7 @@ static void initTest(void)
 }
 
 static void initCloth(bool crossFibers)
-{
+{//Note; Without cross fibers appears to function better
     const float dist = 0.1f;
     const Vec2f topLeft(-0.75f, 0.75f);
     const Vec2f offset(dist, 0.0);
@@ -178,18 +178,19 @@ static void initCloth(bool crossFibers)
         fVector.push_back(new SpringForce(pVector[cur2], pVector[below], rest, ks, kd));
     }
     if (crossFibers) {
+        float drest = rest * sqrt(2);
         for (i = 0; i < dim; i++) {
             for (j = 0; j < dim; j++) {
                 int cur = j * (dim + 1) + i;
                 int rightbelow = cur + dim + 2;
-                fVector.push_back(new SpringForce(pVector[cur], pVector[rightbelow], rest, ks, kd));
+                fVector.push_back(new SpringForce(pVector[cur], pVector[rightbelow], drest, ks, kd));
             }
         }
         for (i = 1; i <= dim; i++) {
             for (j = 0; j < dim; j++) {
                 int cur = j * (dim + 1) + i;
                 int rightabove = cur + dim;
-                fVector.push_back(new SpringForce(pVector[cur], pVector[rightabove], rest, ks, kd));
+                fVector.push_back(new SpringForce(pVector[cur], pVector[rightabove], drest, ks, kd));
             }
         }
     }
@@ -506,7 +507,7 @@ int main(int argc, char ** argv)
     printf("\t Toggle construction/simulation display with the spacebar key\n");
     printf("\t Dump frames by pressing the 'd' key\n");
     printf("\t Change integratuion scheme by pressing 1,2  or 3 for Euler, Midpoint or RK4 respectively\n");
-    printf("\t Change initial scheme by pressing !,@  or # \n");
+    printf("\t Change initial state by pressing !,@  or # \n");
     printf("\t Quit by pressing the 'q' key\n");
 
     dsim = 0;
