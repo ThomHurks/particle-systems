@@ -159,6 +159,7 @@ static void initCloth(void)
     double ks = 0.01;
     double kd = 0.01;
     double rest = 0.075;
+    bool crossFibers = true;
     for (i = 0; i < dim; i++) {
         for (j = 0; j < dim; j++) {
             int cur = j * (dim + 1) + i;
@@ -176,7 +177,23 @@ static void initCloth(void)
         int cur2 = i + dim * (dim + 1);
         int below = cur2 + 1;
         fVector.push_back(new SpringForce(pVector[cur2], pVector[below], rest, ks, kd));
-
+    }
+    if(crossFibers)
+    {
+        for (i = 0; i < dim; i++) {
+        for (j = 0; j < dim; j++) {
+            int cur = j * (dim + 1) + i;
+            int rightbelow = cur + dim + 2;
+            fVector.push_back(new SpringForce(pVector[cur], pVector[rightbelow], rest, ks, kd));
+        }
+    }
+        for (i = 1; i <= dim; i++) {
+        for (j = 0; j < dim; j++) {
+            int cur = j * (dim + 1) + i;
+            int rightabove = cur + dim;
+            fVector.push_back(new SpringForce(pVector[cur], pVector[rightabove], rest, ks, kd));
+        }
+    }
     }
 }
 
@@ -484,7 +501,7 @@ int main(int argc, char ** argv)
 
     // TODO: Make cloth and test interchangeable at runtime.
     //initCloth();
-    initTest();
+    initCloth();
 
     win_x = 512;
     win_y = 512;
