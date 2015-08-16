@@ -46,8 +46,8 @@ void AngularSpring::ApplyForce(const std::vector<Particle*> & pVector)
     float d1_mag = magnitude(d1);
     float d2_mag = magnitude(d2);
 
-    Vec2f I1_Dot = m_p1->m_Velocity;
-    Vec2f I2_Dot = m_p2->m_Velocity;
+    Vec2f I1_Dot = m_p1->m_Velocity - m_MassPoint->m_Velocity;
+    Vec2f I2_Dot = m_p2->m_Velocity - m_MassPoint->m_Velocity;
 
     Vec2f F1 = -((m_ks * d1_mag) + m_kd * (Dot(I1_Dot, d1) / d1_mag)) * normalized(d1);
     Vec2f F2 = -((m_ks * d2_mag) + m_kd * (Dot(I2_Dot, d2) / d2_mag)) * normalized(d2);

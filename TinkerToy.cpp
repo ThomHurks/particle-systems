@@ -128,7 +128,7 @@ static void initTest(void)
     fVector.push_back(new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[1], pVector[2], dist, 1.0, 1.0));
     fVector.push_back(new SpringForce(pVector[2], pVector[0], dist, 1.0, 1.0));
-    fVector.push_back(new AngularSpring(pVector[5], pVector[6], pVector[4], PI / 3.0, 0.01, 0.01));
+    fVector.push_back(new AngularSpring(pVector[5], pVector[6], pVector[4], PI / 3.0, 0.01, 0.1));
 
     int constraintID = 0;
     int numConstraints = 1;
