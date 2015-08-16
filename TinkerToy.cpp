@@ -196,6 +196,37 @@ static void initCloth(bool crossFibers)
     }
 }
 
+static void initHair()
+{
+    const int internalParticles = 18;//ammount of particles in hair is this + 2
+    Vec2f start(0.25, -0.75f);
+    Vec2f end(0.25, 0.0f);
+    m_SolverType = SolverType::Euler;
+    int particleID = 0;
+    int i;
+    Vec2f step = (end-start)/(internalParticles+1);
+    for (i = 0; i <= internalParticles+1; i++) {
+         pVector.push_back(new Particle(start + step * i, particleID++));
+    }
+    
+    //fVector.push_back(new GravityForce());
+    float rest = magnitude(step);
+    double ks = 0.05;
+    double kd = 0.01;
+    for (i = 0; i <= internalParticles; i++) {
+         fVector.push_back(new SpringForce(pVector[i], pVector[i+1], rest, ks, kd));
+    }
+    ks = 0.01;
+    kd = 0.1;
+    double totalInternalAngle = 180.0f* (internalParticles);
+    double angleDegrees = (totalInternalAngle/(internalParticles+2));
+    double angleRadians = PI* angleDegrees/180.0f;
+    for (i = 1; i <= internalParticles; i++) {
+         fVector.push_back(new AngularSpring(pVector[i], pVector[i-1],pVector[i+1], angleRadians, ks, kd));
+    }
+    
+}
+
 /*
 ----------------------------------------------------------------------
 OpenGL specific drawing routines
@@ -387,6 +418,11 @@ static void key_func(unsigned char key, int x, int y)
             dsim = false;
             free_data();
             initCloth(true);
+            break;
+        case '$':
+            dsim = false;
+            free_data();
+            initHair();
             break;
         default:
             std::cout << "Invalid input!\n";
