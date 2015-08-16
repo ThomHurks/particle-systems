@@ -89,6 +89,14 @@ static void free_data(void)
     currentMousePosition = nullptr;
 }
 
+static void init(void)
+{
+    if (!currentMousePosition)
+    {
+        currentMousePosition = new float[2];
+    }
+}
+
 static void clear_data(void)
 {
     size_t ii, size = pVector.size();
@@ -100,6 +108,8 @@ static void clear_data(void)
 
 static void initTest(void)
 {
+    init();
+
     const float dist = 0.2;
     const Vec2f center(0.0, 0.0);
     const Vec2f offset(dist, 0.0);
@@ -140,7 +150,10 @@ static void initTest(void)
 }
 
 static void initCloth(bool crossFibers)
-{//Note; Without cross fibers appears to function better
+{
+    init();
+
+    //Note; Without cross fibers appears to function better
     const float dist = 0.1f;
     const Vec2f topLeft(-0.75f, 0.75f);
     const Vec2f offset(dist, 0.0);
@@ -198,7 +211,9 @@ static void initCloth(bool crossFibers)
 
 static void initHair()
 {
-    const int internalParticles = 18;//ammount of particles in hair is this + 2
+    init();
+
+    const int internalParticles = 65;//ammount of particles in hair is this + 2
     Vec2f start(0.25, -0.75f);
     Vec2f end(0.25, 0.0f);
     m_SolverType = SolverType::Euler;
