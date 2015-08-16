@@ -53,8 +53,11 @@ void AngularSpring::ApplyForce(const std::vector<Particle*> & pVector)
     Vec2f F2 = -((m_ks * d2_mag) + m_kd * (Dot(I2_Dot, d2) / d2_mag)) * normalized(d2);
 
     if (!isnan(F1))
-    {  m_p1->m_AccumulatedForce += F1; }
+    {  m_p1->m_AccumulatedForce += F1; 
+      m_MassPoint->m_AccumulatedForce -= F1;}
 
     if (!isnan(F2))
-    { m_p2->m_AccumulatedForce += F2; }
+    { m_p2->m_AccumulatedForce += F2;
+      m_MassPoint->m_AccumulatedForce -= F2;}
+    
 }
