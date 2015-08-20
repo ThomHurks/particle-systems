@@ -18,8 +18,8 @@ class MouseSpringForce : public Force {
     
  public:
   MouseSpringForce(Particle *p, const double dist, const double ks, const double kd, const float mousePosition[2]);
-  void draw();
-  void ApplyForce(const std::vector<Particle*> & pVector);
+  void draw() override;
+  void ApplyForce(const std::vector<Particle*> & pVector) override;
 
  private:
   Particle * const m_p;

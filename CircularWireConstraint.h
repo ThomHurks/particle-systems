@@ -7,7 +7,7 @@ class CircularWireConstraint : public Force {
 public:
     CircularWireConstraint(Particle *p, const Vec2f & center, const double radius);
     void draw() override;
-    void ApplyForce(const std::vector<Particle*> & pVector);
+    void ApplyForce(const std::vector<Particle*> & pVector) override;
 
 private:
     static void draw_circle(const Vec2f & vect, const double radius);

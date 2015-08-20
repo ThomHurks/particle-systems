@@ -1,4 +1,5 @@
 #include "Solver.h"
+#include "JWJTranspose.h"
 
 void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
                      const std::vector<Force*> & cVector, const SolverType m_SolverType, double* CVector[],
@@ -204,7 +205,10 @@ void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*
         rightHandSide[(i * 2) + 1] = -JDotqdot[i + 1] - JWQ[i + 1] - ksC[i] - kdCDot[i];
     }
 
-    // I have no idea how to get the left side of equation 11. The course notes do not explain it clearly.
+    // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
+    double * lambda = new double[2 * n];
+    JWJTranspose JWJTranspose(W, J);
+    ConjGrad(n * 2, &JWJTranspose, rightHandSide, lambda, 0.1, 0);
 }
 
 void ClearForces(const std::vector<Particle*> & pVector)

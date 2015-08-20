@@ -7,8 +7,8 @@ class AngularSpring : public Force {
     
  public:
   AngularSpring(Particle *p1, Particle * p2,Particle * p3, double angle, double ks, double kd);
-  void draw();
-  void ApplyForce(const std::vector<Particle*> & pVector);
+  void draw() override;
+  void ApplyForce(const std::vector<Particle*> & pVector) override;
 
  private:
   Particle * const m_MassPoint; // The mass point

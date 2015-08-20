@@ -7,8 +7,8 @@ class SpringForce : public Force {
     
  public:
   SpringForce(Particle *p1, Particle * p2, double dist, double ks, double kd);
-  void draw();
-  void ApplyForce(const std::vector<Particle*> & pVector);
+  void draw() override;
+  void ApplyForce(const std::vector<Particle*> & pVector) override;
 
  private:
   Particle * const m_p1;   // particle 1

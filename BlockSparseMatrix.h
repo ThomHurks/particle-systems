@@ -22,8 +22,8 @@ struct MatrixBlock {
 class BlockSparseMatrix : public implicitMatrixWithTrans
 {
 public:
-    void matVecMult(double x[], double r[]);
-    void matTransVecMult(double x[], double r[]);
+    void matVecMult(double x[], double r[]) override;
+    void matTransVecMult(double x[], double r[]) override;
     void AddNewBlock(const int ci, const int pi, double * const data);
 private:
     std::vector<MatrixBlock> m_Matrix;
