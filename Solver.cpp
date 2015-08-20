@@ -189,17 +189,17 @@ void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*
 
     // Then calculate ks times C. Size is n.
     double * ksC = new double[n];
-    for (int i = 0; i < n; ++i)
+    for (i = 0; i < n; ++i)
     { ksC[i] = ks * (*CVector)[i]; }
 
     // Then calculate kd times CDot. Size is n.
     double *kdCDot = new double[n];
-    for (int i = 0; i < n; ++i)
+    for (i = 0; i < n; ++i)
     { kdCDot[i] = kd * (*CDotVector)[i]; }
 
     // Now compute the entire right side of equation 11. The result is a double vector of size 2n.
     double * rightHandSide = new double[2 * n];
-    for (int i = 0; i < n; ++i)
+    for (i = 0; i < n; ++i)
     {
         rightHandSide[i * 2] = -JDotqdot[i] - JWQ[i] - ksC[i] - kdCDot[i];
         rightHandSide[(i * 2) + 1] = -JDotqdot[i + 1] - JWQ[i + 1] - ksC[i] - kdCDot[i];
