@@ -17,7 +17,7 @@ void GravityForce::draw()
 void GravityForce::ApplyForce(const std::vector<Particle*> & pVector)
 {
     int i;
-    int n = pVector.size();
+    size_t n = pVector.size();
     for(i = 0; i < n; ++i)
     {
         pVector[i]->m_AccumulatedForce += pVector[i]->m_Mass * m_Gravity;

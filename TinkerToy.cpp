@@ -191,7 +191,7 @@ static void initCloth(bool crossFibers)
         fVector.push_back(new SpringForce(pVector[cur2], pVector[below], rest, ks, kd));
     }
     if (crossFibers) {
-        float drest = rest * sqrt(2);
+        double drest = rest * sqrt(2);
         for (i = 0; i < dim; i++) {
             for (j = 0; j < dim; j++) {
                 int cur = j * (dim + 1) + i;
@@ -213,7 +213,7 @@ static void initHair()
 {
     init();
 
-    const int internalParticles = 65;//ammount of particles in hair is this + 2
+    const int internalParticles = 65; //amount of particles in hair is this + 2
     Vec2f start(0.25, -0.75f);
     Vec2f end(0.25, 0.0f);
     m_SolverType = SolverType::Euler;
