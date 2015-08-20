@@ -13,13 +13,15 @@
 class JWJTranspose : public implicitMatrixWithTrans
 {
 public:
-    JWJTranspose(double W[], BlockSparseMatrix *J);
+    JWJTranspose(const int n, const double W[], BlockSparseMatrix * const J);
+    ~JWJTranspose();
     void matVecMult(double x[], double r[]) override;
     void matTransVecMult(double x[], double r[]) override;
 private:
-    double *W;
-    BlockSparseMatrix *J;
+    const int n;
+    const double * const W;
+    BlockSparseMatrix * const J;
+    double * m_IntermediateVector;
 };
-
 
 #endif //TUE_SCG_PARTICLE_SYSTEMS_JWJTRANSPOSE_H

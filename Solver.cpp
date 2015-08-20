@@ -207,7 +207,7 @@ void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*
 
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double * lambda = new double[2 * n];
-    JWJTranspose JWJTranspose(W, J);
+    JWJTranspose JWJTranspose(2 * n, W, J);
     ConjGrad(n * 2, &JWJTranspose, rightHandSide, lambda, 0.1, 0);
 }
 
