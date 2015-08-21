@@ -36,10 +36,11 @@ static int frame_number;
 static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
-static double* * CVector;
-static double* * CDotVector;
+static double* *CVector;
+static double* *CDotVector;
 static BlockSparseMatrix J, JDot;
-static SolverType m_SolverType;
+static Solver * solver = nullptr;
+static Solver::SolverType m_SolverType = Solver::SolverType::Euler;
 
 static MouseSpringForce * msf = nullptr;
 static bool userIsMouseInteracting = false;
@@ -65,8 +66,15 @@ free/clear/allocate simulation data
 static void free_data(void)
 {
     // Clear() also calls destructors of the objects inside the vectors.
+    size_t i, n;
+    for (i = 0, n = pVector.size(); i < n; ++i)
+    { delete pVector[i]; }
     pVector.clear();
+    for (i = 0, n = fVector.size(); i < n; ++i)
+    { delete fVector[i]; }
     fVector.clear();
+    for (i = 0, n = cVector.size(); i < n; ++i)
+    { delete cVector[i]; }
     cVector.clear();
 
     delete delete_this_dummy_rod;
@@ -87,10 +95,16 @@ static void free_data(void)
 
     delete[] currentMousePosition;
     currentMousePosition = nullptr;
+
+    delete solver;
+    solver = nullptr;
 }
 
 static void init(void)
 {
+    if (!solver)
+    { solver = new Solver(pVector, fVector, cVector, CVector, CDotVector, J, JDot); }
+
     if (!currentMousePosition)
     {
         currentMousePosition = new float[2];
@@ -119,7 +133,6 @@ static void initTest(void)
     // Create three particles, attach them to each other, then add a
     // circular wire constraint to the first.
 
-    m_SolverType = SolverType::Euler;
     int particleID = 0;
     pVector.push_back(new Particle(center + offset, particleID++));
     pVector.push_back(new Particle(center + offset + offset2, particleID++));
@@ -145,7 +158,7 @@ static void initTest(void)
     CVector = new double*[numConstraints];
     CDotVector = new double*[numConstraints];
     cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, CVector, CDotVector, &J, &JDot, constraintID++));
-    //delete_this_dummy_rod = new RodConstraint(pVector[2], pVector[3], dist);
+    //delete_this_dummy_rod = new RodConstraint(m_ParticlesVector[2], m_ParticlesVector[3], dist);
     delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 }
 
@@ -159,7 +172,7 @@ static void initCloth(bool crossFibers)
     const Vec2f offset(dist, 0.0);
     const Vec2f offset2(0.0, -dist);
     const int dim = 15;
-    m_SolverType = SolverType::Euler;
+
     int particleID = 0;
     int i;
     int j;
@@ -216,7 +229,7 @@ static void initHair()
     const int internalParticles = 65; //amount of particles in hair is this + 2
     Vec2f start(0.25, -0.75f);
     Vec2f end(0.25, 0.0f);
-    m_SolverType = SolverType::Euler;
+
     int particleID = 0;
     int i;
     Vec2f step = (end-start)/(internalParticles+1);
@@ -224,7 +237,7 @@ static void initHair()
          pVector.push_back(new Particle(start + step * i, particleID++));
     }
     
-    //fVector.push_back(new GravityForce());
+    //m_ForcesVector.push_back(new GravityForce());
     float rest = magnitude(step);
     double ks = 0.05;
     double kd = 0.01;
@@ -411,13 +424,13 @@ static void key_func(unsigned char key, int x, int y)
             dsim = !dsim;
             break;
         case '1':
-            m_SolverType = SolverType::Euler;
+            m_SolverType = Solver::SolverType::Euler;
             break;
         case '2':
-            m_SolverType = SolverType::Midpoint;
+            m_SolverType = Solver::SolverType::Midpoint;
             break;
         case '3':
-            m_SolverType = SolverType::RungeKutta4;
+            m_SolverType = Solver::SolverType::RungeKutta4;
             break;
         case '!':
             dsim = false;
@@ -478,7 +491,7 @@ static void idle_func(void)
 {
     if (dsim) {
         get_from_UI();
-        simulation_step(pVector, fVector, cVector, m_SolverType, CVector, CDotVector, &J, &JDot, dt);
+        solver->simulation_step(dt, m_SolverType);
     } else {
         get_from_UI();
         remap_GUI();

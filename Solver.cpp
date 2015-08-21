@@ -1,69 +1,67 @@
 #include "Solver.h"
-#include "JWJTranspose.h"
 
-void simulation_step(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
-                     const std::vector<Force*> & cVector, const SolverType m_SolverType, double* CVector[],
-                     double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot, const double dt)
+Solver::Solver(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector,
+               const std::vector<Force *> &cVector, double* CVector[],
+               double* CDotVector[], BlockSparseMatrix &J, BlockSparseMatrix &JDot) :
+m_ParticlesVector(pVector), m_ForcesVector(fVector), m_ConstraintsVector(cVector), m_CVector(CVector), m_CDotVector(CDotVector),
+m_J(J), m_JDot(JDot)
+{}
+
+void Solver::simulation_step(const double dt, SolverType solverType)
 {
-    switch (m_SolverType)
+    switch (solverType)
     {
         case SolverType::Euler:
-            EulerSolver(pVector, fVector, cVector, CVector, CDotVector, J, JDot,  dt);
+            EulerSolver(dt);
             break;
         case SolverType::Midpoint:
-            MidpointSolver(pVector, fVector, cVector, CVector, CDotVector, J, JDot, dt);
+            MidpointSolver(dt);
             break;
         case SolverType::RungeKutta4:
-            RungeKutta4thOrderSolver(pVector, fVector, cVector, CVector, CDotVector, J, JDot, dt);
+            RungeKutta4thOrderSolver(dt);
             break;
     }
 }
 
-void EulerSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
-                 const std::vector<Force*> & cVector, double* CVector[], double* CDotVector[],
-                 BlockSparseMatrix * J, BlockSparseMatrix * JDot, const double dt)
+void Solver::EulerSolver(const double dt)
 {
-    size_t ii, size = pVector.size();
+    size_t ii, size = m_ParticlesVector.size();
     std::vector<Vec2fTuple> dVector(size); // Optimize this by reusing.
-    ParticleDerivative(pVector, fVector, cVector, dVector);
+    ParticleDerivative(dVector);
     ScaleVectorTuples(dVector, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position += dVector[ii].vec1; // XDot
-        pVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
+        m_ParticlesVector[ii]->m_Position += dVector[ii].vec1; // XDot
+        m_ParticlesVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
     }
 }
 
-void MidpointSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
-                    const std::vector<Force*> & cVector, double* CVector[], double* CDotVector[],
-                    BlockSparseMatrix * J, BlockSparseMatrix * JDot, const double dt)
+void Solver::MidpointSolver(const double dt)
 {
-    size_t ii, size = pVector.size();
+    size_t ii, size = m_ParticlesVector.size();
     std::vector<Vec2fTuple> dVector(size); // Optimize this by reusing.
     std::vector<Vec2fTuple> originals(size);
-    ParticleDerivative(pVector, fVector, cVector, dVector);
+    ParticleDerivative(dVector);
     ScaleVectorTuples(dVector, dt / 2); //notice the /2
     for (ii = 0; ii < size; ii++)
     {   //Make half an euler step, save original positions and velocities.
-        originals[ii].vec1 = pVector[ii]->m_Position;
-        originals[ii].vec2 = pVector[ii]->m_Velocity;
-        pVector[ii]->m_Position += dVector[ii].vec1; // XDot
-        pVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
+        originals[ii].vec1 = m_ParticlesVector[ii]->m_Position;
+        originals[ii].vec2 = m_ParticlesVector[ii]->m_Velocity;
+        m_ParticlesVector[ii]->m_Position += dVector[ii].vec1; // XDot
+        m_ParticlesVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
     }
-    ParticleDerivative(pVector, fVector, cVector, dVector);
+    ParticleDerivative(dVector);
     ScaleVectorTuples(dVector, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].vec1 + dVector[ii].vec1; // XDot
-        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector[ii].vec2; // VDot
+        m_ParticlesVector[ii]->m_Position = originals[ii].vec1 + dVector[ii].vec1; // XDot
+        m_ParticlesVector[ii]->m_Velocity = originals[ii].vec2 + dVector[ii].vec2; // VDot
     }
 }
 
-void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
-                              const std::vector<Force*> & cVector, double* CVector[], double* CDotVector[],
-                              BlockSparseMatrix * J, BlockSparseMatrix * JDot,  const double dt)
+void Solver::RungeKutta4thOrderSolver(const double dt)
 {
-    size_t ii, size = pVector.size();
+    size_t ii, size = m_ParticlesVector.size();
     std::vector<Vec2fTuple> dVector1(size); // Optimize this by reusing.
     std::vector<Vec2fTuple> dVector2(size); // Optimize this by reusing.
     std::vector<Vec2fTuple> dVector3(size); // Optimize this by reusing.
@@ -71,108 +69,103 @@ void RungeKutta4thOrderSolver(const std::vector<Particle*> & pVector, const std:
     std::vector<Vec2fTuple> originals(size);
     for (ii = 0; ii < size; ii++)
     {
-        originals[ii].vec1 = pVector[ii]->m_Position;
-        originals[ii].vec2 = pVector[ii]->m_Velocity;
+        originals[ii].vec1 = m_ParticlesVector[ii]->m_Position;
+        originals[ii].vec2 = m_ParticlesVector[ii]->m_Velocity;
     }
     //step 1
-    ParticleDerivative(pVector, fVector, cVector, dVector1);
+    ParticleDerivative(dVector1);
     ScaleVectorTuples(dVector1, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].vec1 + dVector1[ii].vec1 /2; // XDot
-        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector1[ii].vec2 /2; // VDot
+        m_ParticlesVector[ii]->m_Position = originals[ii].vec1 + dVector1[ii].vec1 /2; // XDot
+        m_ParticlesVector[ii]->m_Velocity = originals[ii].vec2 + dVector1[ii].vec2 /2; // VDot
     }
     //step 2
-    ParticleDerivative(pVector, fVector, cVector, dVector2);
+    ParticleDerivative(dVector2);
     ScaleVectorTuples(dVector2, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].vec1 + dVector2[ii].vec1 /2; // XDot
-        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector2[ii].vec2 /2; // VDot
+        m_ParticlesVector[ii]->m_Position = originals[ii].vec1 + dVector2[ii].vec1 /2; // XDot
+        m_ParticlesVector[ii]->m_Velocity = originals[ii].vec2 + dVector2[ii].vec2 /2; // VDot
     }
     //step 3
-    ParticleDerivative(pVector, fVector, cVector, dVector3);
+    ParticleDerivative(dVector3);
     ScaleVectorTuples(dVector3, dt);
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].vec1 + dVector3[ii].vec1; // XDot
-        pVector[ii]->m_Velocity = originals[ii].vec2 + dVector3[ii].vec2; // VDot
+        m_ParticlesVector[ii]->m_Position = originals[ii].vec1 + dVector3[ii].vec1; // XDot
+        m_ParticlesVector[ii]->m_Velocity = originals[ii].vec2 + dVector3[ii].vec2; // VDot
     }
     //step 4
-    ParticleDerivative(pVector, fVector, cVector, dVector4);
+    ParticleDerivative(dVector4);
     ScaleVectorTuples(dVector4, dt);
     //final positions & velocities
     for (ii = 0; ii < size; ii++)
     {
-        pVector[ii]->m_Position = originals[ii].vec1 +
+        m_ParticlesVector[ii]->m_Position = originals[ii].vec1 +
                 (dVector1[ii].vec1 +2*dVector2[ii].vec1 +2*dVector3[ii].vec1 +dVector4[ii].vec1)/6; // XDot
-        pVector[ii]->m_Velocity = originals[ii].vec2 +
+        m_ParticlesVector[ii]->m_Velocity = originals[ii].vec2 +
                 (dVector1[ii].vec2 +2*dVector2[ii].vec2 +2*dVector3[ii].vec2 +dVector4[ii].vec2)/6; // VDot
     }
     
 }
 
-void ParticleDerivative(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector,
-                        const std::vector<Force*> & cVector, std::vector<Vec2fTuple> & dVector)
+void Solver::ParticleDerivative(std::vector<Vec2fTuple> & dVector)
 {
-    ClearForces(pVector);
+    ClearForces(m_ParticlesVector);
     // First calculate forces:
-    CalculateForces(pVector, fVector);
+    CalculateForces(m_ParticlesVector, m_ForcesVector);
     // Then calculate constraint forces:
-    CalculateForces(pVector, cVector);
+    CalculateForces(m_ParticlesVector, m_ConstraintsVector);
     // Then derivatives:
     size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
     {
-        dVector[i].vec1 = pVector[i]->m_Velocity; // XDot
-        dVector[i].vec2 = pVector[i]->m_AccumulatedForce / pVector[i]->m_Mass; // VDot
+        dVector[i].vec1 = m_ParticlesVector[i]->m_Velocity; // XDot
+        dVector[i].vec2 = m_ParticlesVector[i]->m_AccumulatedForce / m_ParticlesVector[i]->m_Mass; // VDot
     }
 }
 
-void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*> & cVector, double* CVector[],
-                double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot)
+void Solver::Equation11(double ks, double kd)
 {
-    // Todo: pass in ks and kd as parameters.
-    double ks, kd;
-    ks = kd = 1;
-
     // Preparing variables for equation 11:
-    size_t i, n = pVector.size();
+    size_t i;
+    size_t n = m_ParticlesVector.size();
 
     // q contains all particle positions as 2-vectors. Size is n.
     Vec2f * q = new Vec2f[n];
     for (i = 0; i < n; ++i)
-    { q[i] = pVector[i]->m_Position; }
+    { q[i] = m_ParticlesVector[i]->m_Position; }
 
     // qdot contains all velocities, but each dimension is stored separately as a double. The size is 2n.
     double * qdot = new double[2 * n];
     for (i = 0; i < n; ++i)
     {
-        qdot[i * 2] = pVector[i]->m_Velocity[0];
-        qdot[(i * 2) + 1] = pVector[i]->m_Velocity[1];
+        qdot[i * 2] = m_ParticlesVector[i]->m_Velocity[0];
+        qdot[(i * 2) + 1] = m_ParticlesVector[i]->m_Velocity[1];
     }
 
     // M contains all particle masses as a double array of size n.
     double * M = new double[n];
     for (i = 0; i < n; ++i)
-    { M[i] = pVector[i]->m_Mass; }
+    { M[i] = m_ParticlesVector[i]->m_Mass; }
 
     // Q contains all accumulated forces as 2-vectors. Size is n.
     Vec2f * Q = new Vec2f[n];
     for (i = 0; i < n; ++i)
-    { Q[i] = pVector[i]->m_AccumulatedForce; }
+    { Q[i] = m_ParticlesVector[i]->m_AccumulatedForce; }
 
     // W contains the inverse of all particle masses as a double array of size n.
     double * W = new double[n];
     for (i = 0; i < n; ++i)
-    { W[i] = 1 / pVector[i]->m_Mass; }
+    { W[i] = 1 / m_ParticlesVector[i]->m_Mass; }
 
     // Start computing equation 11:
 
-    // First calculate JDot times qdot. The result is a vector of size 2n since each dimension is stored separately.
+    // First calculate m_JDot times qdot. The result is a vector of size 2n since each dimension is stored separately.
     double * JDotqdot = new double[2 * n];
     std::fill(JDotqdot, JDotqdot + (2 * n), 0);
-    JDot->matVecMult(qdot, JDotqdot);
+    m_JDot.matVecMult(qdot, JDotqdot);
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
     double * WQ = new double[2 * n];
@@ -185,17 +178,17 @@ void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*
     // Then calculate J times WQ. The result is a vector of size 2n since each dimension is stored separately.
     double * JWQ = new double[2 * n];
     std::fill(JWQ, JWQ + (2 * n), 0);
-    J->matVecMult(WQ, JWQ);
+    m_J.matVecMult(WQ, JWQ);
 
     // Then calculate ks times C. Size is n.
     double * ksC = new double[n];
     for (i = 0; i < n; ++i)
-    { ksC[i] = ks * (*CVector)[i]; }
+    { ksC[i] = ks * (*m_CVector)[i]; }
 
     // Then calculate kd times CDot. Size is n.
     double *kdCDot = new double[n];
     for (i = 0; i < n; ++i)
-    { kdCDot[i] = kd * (*CDotVector)[i]; }
+    { kdCDot[i] = kd * (*m_CDotVector)[i]; }
 
     // Now compute the entire right side of equation 11. The result is a double vector of size 2n.
     double * rightHandSide = new double[2 * n];
@@ -207,32 +200,32 @@ void Equation11(const std::vector<Particle*> & pVector, const std::vector<Force*
 
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double * lambda = new double[2 * n];
-    JWJTranspose JWJTranspose(2 * n, W, J);
+    JWJTranspose JWJTranspose(2 * n, W, m_J);
     ConjGrad(n * 2, &JWJTranspose, rightHandSide, lambda, 0.1, 0);
 }
 
-void ClearForces(const std::vector<Particle*> & pVector)
+void Solver::ClearForces(const std::vector<Particle*> & pVector)
 {
-    size_t i, n = pVector.size();
-    for (i = 0; i < n; ++i)
+    size_t i, n;
+    for (i = 0, n = pVector.size(); i < n; ++i)
     {
         pVector[i]->m_AccumulatedForce = Vec2f(0, 0);
     }
 }
 
-void CalculateForces(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector)
+void Solver::CalculateForces(const std::vector<Particle*> & pVector, const std::vector<Force*> & fVector)
 {
-    size_t i, n = fVector.size();
-    for (i = 0; i < n; ++i)
+    size_t i, n;
+    for (i = 0, n = fVector.size(); i < n; ++i)
     {
         fVector[i]->ApplyForce(pVector);
     }
 }
 
-void ScaleVectorTuples(std::vector<Vec2fTuple> &dVector, const double scaleFactor)
+void Solver::ScaleVectorTuples(std::vector<Vec2fTuple> &dVector, const double scaleFactor)
 {
-    size_t i, n = dVector.size();
-    for (i = 0; i < n; ++i)
+    size_t i, n;
+    for (i = 0, n = dVector.size(); i < n; ++i)
     {
         dVector[i].vec1 *= scaleFactor;
         dVector[i].vec2 *= scaleFactor;
