@@ -7,7 +7,7 @@
 
 RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const double dist, double* CVector[],
                              double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id) :
-  m_p1(p1), m_p2(p2), m_distSquared(dist * dist), m_C(0), m_CDot(0)
+  Constraint(0, 0), m_p1(p1), m_p2(p2), m_distSquared(dist * dist)
 {
     // First set up C and CDot
     CVector[id] = &m_C;

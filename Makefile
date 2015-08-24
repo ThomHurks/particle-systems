@@ -1,7 +1,7 @@
 UNAME := $(shell uname)
 CXX = g++
 CXXFLAGS = -g -Wall -Wno-sign-compare -Woverloaded-virtual -Iinclude -DHAVE_CONFIG_H -std=c++0x
-OBJS = Solver.o Particle.o Force.o TinkerToy.o RodConstraint.o SpringForce.o GravityForce.o CircularWireConstraint.o imageio.o BlockSparseMatrix.o AngularSpring.o MouseSpringForce.o JWJTranspose.o
+OBJS = Solver.o Particle.o TinkerToy.o RodConstraint.o SpringForce.o GravityForce.o CircularWireConstraint.o imageio.o BlockSparseMatrix.o AngularSpring.o MouseSpringForce.o JWJTranspose.o linearSolver.o
 
 ifeq ($(UNAME), Darwin)
 	TARGET = project1

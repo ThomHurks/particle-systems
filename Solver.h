@@ -6,11 +6,15 @@
 //  Copyright (c) 2015 Thom Hurks. All rights reserved.
 //
 
+#pragma once
+
 #include "Particle.h"
 #include "Force.h"
 #include "BlockSparseMatrix.h"
 #include <vector>
 #include "JWJTranspose.h"
+#include "linearSolver.h"
+
 
 class Solver {
 

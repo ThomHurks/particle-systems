@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Force.h"
+#include "Constraint.h"
 #define PI 3.1415926535897932384626433832795
 
-class CircularWireConstraint : public Force {
+class CircularWireConstraint : public Constraint {
 public:
     CircularWireConstraint(Particle *p, const Vec2f & center, const double radius);
     void draw() override;

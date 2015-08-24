@@ -10,11 +10,11 @@
 #include "Particle.h"
 #include <vector>
 
+// Abstract class
 class Force
 {
 public:
-    Force();
-    virtual ~Force() = 0;
+    virtual ~Force() {};
     virtual void draw() = 0;
     virtual void ApplyForce(const std::vector<Particle*> & pVector) = 0;
 };

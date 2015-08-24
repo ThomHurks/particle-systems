@@ -201,7 +201,10 @@ void Solver::Equation11(double ks, double kd)
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double * lambda = new double[2 * n];
     JWJTranspose JWJTranspose(2 * n, W, m_J);
-    ConjGrad(n * 2, &JWJTranspose, rightHandSide, lambda, 0.1, 0);
+
+    int n_int = static_cast<int>((n * 2));
+    int steps = 0; // 0 implies MAX_STEPS.
+    ConjGrad(n_int, &JWJTranspose, rightHandSide, lambda, 0.1, &steps);
 }
 
 void Solver::ClearForces(const std::vector<Particle*> & pVector)

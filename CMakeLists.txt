@@ -22,7 +22,6 @@ set(SOURCE_FILES
         BlockSparseMatrix.h
         CircularWireConstraint.cpp
         CircularWireConstraint.h
-        Force.cpp
         Force.h
         GravityForce.cpp
         GravityForce.h
@@ -44,7 +43,8 @@ set(SOURCE_FILES
         AngularSpring.cpp
         AngularSpring.h
         JWJTranspose.cpp
-        JWJTranspose.h)
+        JWJTranspose.h
+        Constraint.h)
 
 add_executable(tue_scg_particle_systems ${SOURCE_FILES})
 

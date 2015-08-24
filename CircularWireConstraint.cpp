@@ -10,7 +10,7 @@
 #define PI 3.1415926535897932384626433832795
 
 CircularWireConstraint::CircularWireConstraint(Particle *p, const Vec2f & center, const double radius) :
-	m_p(p), m_center(center), m_radius(radius), m_radiusSquared(radius * radius) {}
+        Constraint(0, 0), m_p(p), m_center(center), m_radius(radius), m_radiusSquared(radius * radius) {}
 
 void CircularWireConstraint::draw()
 {
@@ -19,8 +19,8 @@ void CircularWireConstraint::draw()
 
 void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
 {
-    double C = sqrMagnitude(m_p->m_Position - m_center) - m_radiusSquared;
-    // Then plug into equation 11 and solve.
+    m_C = sqrMagnitude(m_p->m_Position - m_center) - m_radiusSquared;
+    m_CDot = 0; // Todo: implement this.
 }
 
 void CircularWireConstraint::draw_circle(const Vec2f & vect, const double radius)
