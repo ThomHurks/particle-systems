@@ -36,8 +36,6 @@ static int frame_number;
 static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
-static double* *CVector;
-static double* *CDotVector;
 static BlockSparseMatrix J, JDot;
 static Solver * solver = nullptr;
 static Solver::SolverType m_SolverType = Solver::SolverType::Euler;
@@ -87,12 +85,6 @@ static void free_data(void)
     msf = nullptr;
 
     // Make sure arrays are deleted with correct delete[] syntax:
-    delete[] CVector;
-    CVector = nullptr;
-
-    delete[] CDotVector;
-    CDotVector = nullptr;
-
     delete[] currentMousePosition;
     currentMousePosition = nullptr;
 
@@ -103,7 +95,7 @@ static void free_data(void)
 static void init(void)
 {
     if (!solver)
-    { solver = new Solver(pVector, fVector, cVector, CVector, CDotVector, J, JDot); }
+    { solver = new Solver(pVector, fVector, cVector, J, JDot); }
 
     if (!currentMousePosition)
     {
@@ -154,10 +146,7 @@ static void initTest(void)
     fVector.push_back(new AngularSpring(pVector[5], pVector[6], pVector[4], PI / 3.0, 0.01, 0.1));
 
     int constraintID = 0;
-    int numConstraints = 1;
-    CVector = new double*[numConstraints];
-    CDotVector = new double*[numConstraints];
-    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, CVector, CDotVector, &J, &JDot, constraintID++));
+    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, &J, &JDot, constraintID++));
     //delete_this_dummy_rod = new RodConstraint(m_ParticlesVector[2], m_ParticlesVector[3], dist);
     delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
 }

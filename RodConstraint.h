@@ -6,8 +6,8 @@
 class RodConstraint : public Constraint
 {
 public:
-    RodConstraint(const Particle *p1, const Particle * p2, const double dist, double* CVector[],
-                  double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id);
+    RodConstraint(const Particle *p1, const Particle * p2, const double dist,
+                  BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id);
     void draw() override;
     void ApplyForce(const std::vector<Particle*> & pVector) override;
 

@@ -5,13 +5,10 @@
 #include <GL/glut.h>
 #endif
 
-RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const double dist, double* CVector[],
-                             double* CDotVector[], BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id) :
+RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const double dist,
+                                          BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id) :
   Constraint(0, 0), m_p1(p1), m_p2(p2), m_distSquared(dist * dist)
 {
-    // First set up C and CDot
-    CVector[id] = &m_C;
-    CDotVector[id] = &m_CDot;
     // Set up the BSM for the Jacobian:
     J->AddNewBlock(id, p1->m_ID, &m_C);
     J->AddNewBlock(id, p2->m_ID, &m_C);

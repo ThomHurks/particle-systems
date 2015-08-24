@@ -10,6 +10,7 @@
 
 #include "Particle.h"
 #include "Force.h"
+#include "Constraint.h"
 #include "BlockSparseMatrix.h"
 #include <vector>
 #include "JWJTranspose.h"
@@ -30,8 +31,7 @@ public:
     };
 
     Solver(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector,
-           const std::vector<Force *> &cVector, double* CVector[],
-           double* CDotVector[], BlockSparseMatrix &J, BlockSparseMatrix &JDot);
+           const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot);
 
     void simulation_step(const double dt, SolverType solverType);
 
@@ -55,8 +55,8 @@ private:
     const std::vector<Particle *> &m_ParticlesVector;
     const std::vector<Force *> &m_ForcesVector;
     const std::vector<Force *> &m_ConstraintsVector;
-    double* *m_CVector;
-    double* *m_CDotVector;
+    double *m_CVector;
+    double *m_CDotVector;
     BlockSparseMatrix &m_J;
     BlockSparseMatrix &m_JDot;
 };

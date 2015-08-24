@@ -1,10 +1,8 @@
 #include "Solver.h"
 
 Solver::Solver(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector,
-               const std::vector<Force *> &cVector, double* CVector[],
-               double* CDotVector[], BlockSparseMatrix &J, BlockSparseMatrix &JDot) :
-m_ParticlesVector(pVector), m_ForcesVector(fVector), m_ConstraintsVector(cVector), m_CVector(CVector), m_CDotVector(CDotVector),
-m_J(J), m_JDot(JDot)
+               const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot) :
+m_ParticlesVector(pVector), m_ForcesVector(fVector), m_ConstraintsVector(cVector), m_J(J), m_JDot(JDot)
 {}
 
 void Solver::simulation_step(const double dt, SolverType solverType)
@@ -145,6 +143,16 @@ void Solver::Equation11(double ks, double kd)
         qdot[(i * 2) + 1] = m_ParticlesVector[i]->m_Velocity[1];
     }
 
+    // Create the C and CDot vectors that contain the constraint derivatives by gathering the C and CDot values.
+    size_t n_Constraints = m_ConstraintsVector.size();
+    m_CVector = new double[n_Constraints];
+    m_CDotVector = new double[n_Constraints];
+    for (i = 0; i < n_Constraints; ++i)
+    {
+        m_CVector[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetC();
+        m_CDotVector[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetCDot();
+    }
+
     // M contains all particle masses as a double array of size n.
     double * M = new double[n];
     for (i = 0; i < n; ++i)
@@ -183,12 +191,12 @@ void Solver::Equation11(double ks, double kd)
     // Then calculate ks times C. Size is n.
     double * ksC = new double[n];
     for (i = 0; i < n; ++i)
-    { ksC[i] = ks * (*m_CVector)[i]; }
+    { ksC[i] = ks * m_CVector[i]; }
 
     // Then calculate kd times CDot. Size is n.
     double *kdCDot = new double[n];
     for (i = 0; i < n; ++i)
-    { kdCDot[i] = kd * (*m_CDotVector)[i]; }
+    { kdCDot[i] = kd * m_CDotVector[i]; }
 
     // Now compute the entire right side of equation 11. The result is a double vector of size 2n.
     double * rightHandSide = new double[2 * n];
