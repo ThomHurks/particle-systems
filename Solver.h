@@ -31,7 +31,7 @@ public:
     };
 
     Solver(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector,
-           const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot);
+           const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot, const double ks, const double kd);
 
     void simulation_step(const double dt, SolverType solverType);
 
@@ -43,7 +43,7 @@ public:
 
     void ParticleDerivative(std::vector<Vec2fTuple> & dVector);
 
-    void Equation11(double ks, double kd);
+    void SolveConstraintForces(const double ks, const double kd); // This is equation 11.
 
     void ClearForces(const std::vector<Particle *> &pVector);
 
@@ -55,8 +55,8 @@ private:
     const std::vector<Particle *> &m_ParticlesVector;
     const std::vector<Force *> &m_ForcesVector;
     const std::vector<Force *> &m_ConstraintsVector;
-    double *m_CVector;
-    double *m_CDotVector;
     BlockSparseMatrix &m_J;
     BlockSparseMatrix &m_JDot;
+    const double m_ks;
+    const double m_kd;
 };
