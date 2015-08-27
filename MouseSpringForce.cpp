@@ -9,7 +9,7 @@ MouseSpringForce::MouseSpringForce(Particle *p, const double dist, const double 
                                    const float mousePosition[2]) :
   m_p(p), m_dist(dist), m_ks(ks), m_kd(kd), m_loc(mousePosition) {}
 
-void MouseSpringForce::draw()
+void MouseSpringForce::draw() const
 {
   glBegin( GL_LINES );
   glColor3f(1.0, 0.7, 0.8);

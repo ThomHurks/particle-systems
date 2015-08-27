@@ -17,7 +17,7 @@ RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const doub
     JDot->AddNewBlock(id, p2->m_ID, &m_CDot);
 }
 
-void RodConstraint::draw()
+void RodConstraint::draw() const
 {
   glBegin( GL_LINES );
   glColor3f(0.8, 0.7, 0.6);
@@ -33,13 +33,13 @@ void RodConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     m_CDot = sqrMagnitude(m_p1->m_Velocity - m_p2->m_Velocity); // Todo: check if this is correct.
 }
 
-void RodConstraint::SetCSlice(double C[])
+void RodConstraint::SetCSlice(double C[]) const
 {
     C[m_p1->m_ID] += m_C;
     C[m_p2->m_ID] += m_C;
 }
 
-void RodConstraint::SetCDotSlice(double CDot[])
+void RodConstraint::SetCDotSlice(double CDot[]) const
 {
     CDot[m_p1->m_ID] += m_CDot;
     CDot[m_p2->m_ID] += m_CDot;

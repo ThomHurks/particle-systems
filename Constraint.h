@@ -14,8 +14,8 @@ public:
     Constraint(const double C, const double CDot) : m_C(C), m_CDot(CDot) { }
     virtual ~Constraint() {};
     // Getters:
-    virtual void SetCSlice(double C[]) = 0;
-    virtual void SetCDotSlice(double C[]) = 0;
+    virtual void SetCSlice(double C[]) const = 0;
+    virtual void SetCDotSlice(double C[]) const = 0;
 protected:
     double m_C;
     double m_CDot;

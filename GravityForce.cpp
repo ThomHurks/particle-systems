@@ -11,7 +11,7 @@
 const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -9.80665 * pow(10,-6));
 
  
-void GravityForce::draw()
+void GravityForce::draw() const
 {}
 
 void GravityForce::ApplyForce(const std::vector<Particle*> & pVector)

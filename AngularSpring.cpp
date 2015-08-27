@@ -11,7 +11,7 @@ m_MassPoint(massPoint), m_p1(p1), m_p2(p2), m_angle(angle), m_ks(ks), m_kd(kd)
 {
 }
 
-void AngularSpring::draw()
+void AngularSpring::draw() const
 {
     glBegin(GL_LINES);
     glColor3f(0.3, 0.3, 1);

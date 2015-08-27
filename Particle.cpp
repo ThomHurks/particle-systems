@@ -24,7 +24,7 @@ void Particle::reset()
 	m_Velocity = Vec2f(0.0, 0.0);
     m_AccumulatedForce = Vec2f(0, 0);
 }
-void Particle::draw()
+void Particle::draw() const
 {
 	const double h = 0.03;
 	glColor3f(1.f, 1.f, 1.f); 

@@ -11,7 +11,7 @@
 class GravityForce : public Force
 {
 public:
-    void draw() override;
+    void draw() const override;
     void ApplyForce(const std::vector<Particle*> & pVector) override;
 private:
     static const Vec2f m_Gravity;

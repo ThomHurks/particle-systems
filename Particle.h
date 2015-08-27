@@ -10,7 +10,7 @@ public:
 	virtual ~Particle(void);
 
 	void reset();
-	void draw();
+	void draw() const;
 
 	const Vec2f m_ConstructPos;
 	Vec2f m_Position;

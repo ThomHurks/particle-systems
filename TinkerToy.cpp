@@ -52,9 +52,6 @@ static int mouse_shiftclick[3];
 static int omx, omy, mx, my;
 static int hmx, hmy;
 
-static RodConstraint * delete_this_dummy_rod = nullptr;
-static CircularWireConstraint * delete_this_dummy_wire = nullptr;
-
 /*
 ----------------------------------------------------------------------
 free/clear/allocate simulation data
@@ -74,12 +71,6 @@ static void free_data(void)
     for (i = 0, n = cVector.size(); i < n; ++i)
     { delete cVector[i]; }
     cVector.clear();
-
-    delete delete_this_dummy_rod;
-    delete_this_dummy_rod = nullptr;
-
-    delete delete_this_dummy_wire;
-    delete_this_dummy_wire = nullptr;
 
     delete msf;
     msf = nullptr;
@@ -152,8 +143,7 @@ static void initTest(void)
 
     int constraintID = 0;
     cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, &J, &JDot, constraintID++));
-    //delete_this_dummy_rod = new RodConstraint(m_ParticlesVector[2], m_ParticlesVector[3], dist);
-    delete_this_dummy_wire = new CircularWireConstraint(pVector[0], center, dist);
+    cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
 }
 
 static void initCloth(bool crossFibers)
@@ -318,11 +308,6 @@ static void draw_constraints(void)
     for (i = 0; i < n; ++i) {
         cVector[i]->draw();
     }
-    // Delete this eventually:
-    if (delete_this_dummy_rod)
-        delete_this_dummy_rod->draw();
-    if (delete_this_dummy_wire)
-        delete_this_dummy_wire->draw();
 }
 
 /*

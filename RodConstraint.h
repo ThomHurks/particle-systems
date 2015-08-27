@@ -8,10 +8,10 @@ class RodConstraint : public Constraint
 public:
     RodConstraint(const Particle *p1, const Particle * p2, const double dist,
                   BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id);
-    void draw() override;
+    void draw() const override;
     void ApplyForce(const std::vector<Particle*> & pVector) override;
-    void SetCSlice(double C[]) override;
-    void SetCDotSlice(double C[]) override;
+    void SetCSlice(double C[]) const override;
+    void SetCDotSlice(double C[]) const override;
 
 private:
     const Particle * const m_p1;
