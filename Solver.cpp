@@ -1,8 +1,10 @@
 #include "Solver.h"
 
 Solver::Solver(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector,
-               const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot, const double ks, const double kd) :
-m_ParticlesVector(pVector), m_ForcesVector(fVector), m_ConstraintsVector(cVector), m_J(J), m_JDot(JDot), m_ks(ks), m_kd(kd)
+               const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot, const double ks,
+               const double kd, const double epsilon) :
+m_ParticlesVector(pVector), m_ForcesVector(fVector), m_ConstraintsVector(cVector), m_J(J), m_JDot(JDot), m_ks(ks),
+m_kd(kd), m_epsilon(epsilon)
 {}
 
 void Solver::simulation_step(const double dt, SolverType solverType)
@@ -116,7 +118,7 @@ void Solver::ParticleDerivative(std::vector<Vec2fTuple> & dVector)
     // Then calculate constraint forces:
     CalculateForces(m_ParticlesVector, m_ConstraintsVector);
     // Then solve for the constraint force on each particle: (this is equation 11)
-    SolveConstraintForces(m_ks, m_kd);
+    SolveConstraintForces(m_ks, m_kd, m_epsilon);
     // Then derivatives:
     size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
@@ -127,17 +129,12 @@ void Solver::ParticleDerivative(std::vector<Vec2fTuple> & dVector)
 }
 
 // Equation 11
-void Solver::SolveConstraintForces(const double ks, const double kd)
+void Solver::SolveConstraintForces(const double ks, const double kd, const double epsilon)
 {
     // Preparing variables for equation 11:
     size_t i;
     size_t n = m_ParticlesVector.size();
     size_t two_n = 2 * n;
-
-    // q contains all particle positions as 2-vectors. Size is n.
-    Vec2f *q = new Vec2f[n];
-    for (i = 0; i < n; ++i)
-    { q[i] = m_ParticlesVector[i]->m_Position; }
 
     // qdot contains all velocities, but each dimension is stored separately as a double. The size is 2n.
     double *qdot = new double[2 * n];
@@ -148,19 +145,17 @@ void Solver::SolveConstraintForces(const double ks, const double kd)
     }
 
     // Create the C and CDot arrays that contain the constraint derivatives by gathering the C and CDot values.
+    // The size of the arrays are n, since each constraint affects one or more particles.
     size_t n_Constraints = m_ConstraintsVector.size();
-    double *C = new double[n_Constraints];
-    double *CDot = new double[n_Constraints];
+    double *C = new double[n];
+    std::fill(C, C + n, 0);
+    double *CDot = new double[n];
+    std::fill(CDot, CDot + n, 0);
     for (i = 0; i < n_Constraints; ++i)
     {
-        C[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetC();
-        CDot[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetCDot();
+        (static_cast<Constraint*>(m_ConstraintsVector[i]))->SetCSlice(C);
+        (static_cast<Constraint*>(m_ConstraintsVector[i]))->SetCDotSlice(CDot);
     }
-
-    // M contains all particle masses as a double array of size n.
-    double *M = new double[n];
-    for (i = 0; i < n; ++i)
-    { M[i] = m_ParticlesVector[i]->m_Mass; }
 
     // Q contains all accumulated forces as 2-vectors. Size is n.
     Vec2f *Q = new Vec2f[n];
@@ -175,12 +170,12 @@ void Solver::SolveConstraintForces(const double ks, const double kd)
     // Start computing equation 11:
 
     // First calculate m_JDot times qdot. The result is a vector of size 2n since each dimension is stored separately.
-    double *JDotqdot = new double[2 * n];
-    std::fill(JDotqdot, JDotqdot + (2 * n), 0);
+    double *JDotqdot = new double[two_n];
+    std::fill(JDotqdot, JDotqdot + two_n, 0);
     m_JDot.matVecMult(qdot, JDotqdot);
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
-    double *WQ = new double[2 * n];
+    double *WQ = new double[two_n];
     for (i = 0; i < n; ++i)
     {
         WQ[i * 2] = W[i] * Q[i][0];
@@ -188,36 +183,46 @@ void Solver::SolveConstraintForces(const double ks, const double kd)
     }
 
     // Then calculate J times WQ. The result is a vector of size 2n since each dimension is stored separately.
-    double *JWQ = new double[2 * n];
-    std::fill(JWQ, JWQ + (2 * n), 0);
+    double *JWQ = new double[two_n];
+    std::fill(JWQ, JWQ + two_n, 0);
     m_J.matVecMult(WQ, JWQ);
 
-    // Then calculate ks times C. Size is number of constraints.
-    double *ksC = new double[n_Constraints];
-    for (i = 0; i < n_Constraints; ++i)
-    { ksC[i] = ks * C[i]; }
+    // Then calculate ks times C. C has size n, but we need 2n, so duplicate all values.
+    double *ksC = new double[two_n];
+    for (i = 0; i < n; ++i)
+    {
+        ksC[i * 2] = ks * C[i];
+        ksC[(i * 2) + 1] = ks * C[i];
+    }
 
-    // Then calculate kd times CDot. Size is number of constraints.
-    double *kdCDot = new double[n_Constraints];
-    for (i = 0; i < n_Constraints; ++i)
-    { kdCDot[i] = kd * CDot[i]; }
+    // Then calculate kd times CDot. CDot has size n, but we need 2n, so duplicate all values.
+    double *kdCDot = new double[two_n];
+    for (i = 0; i < n; ++i)
+    {
+        kdCDot[i * 2] = kd * CDot[i];
+        kdCDot[(i * 2) + 1] = kd * CDot[i];
+    }
 
     // Now compute the entire right side of equation 11. The result is a double vector of size 2n.
-    double *rightHandSide = new double[2 * n];
+    double *rightHandSide = new double[two_n];
     for (i = 0; i < two_n; ++i)
     {
         rightHandSide[i] = -JDotqdot[i] - JWQ[i] - ksC[i] - kdCDot[i];
     }
 
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
-    double *lambda = new double[2 * n];
-    std::fill(lambda, lambda + (2 * n), 0);
-    JWJTranspose JWJTranspose(2 * n, W, m_J);
+    double *lambda = new double[two_n];
+    std::fill(lambda, lambda + two_n, 0);
+    JWJTranspose JWJTranspose(two_n, W, m_J);
 
-    int n_int = static_cast<int>((n * 2));
+    int n_int = static_cast<int>(two_n);
     int steps = 0; // 0 implies MAX_STEPS.
-    double rSqrLen = ConjGrad(n_int, &JWJTranspose, rightHandSide, lambda, 0.1, &steps);
+    std::cout << "Calling conjugate gradient algorithm...\n";
+    double rSqrLen = ConjGrad(n_int, &JWJTranspose, rightHandSide, lambda, epsilon, &steps);
     std::cout << rSqrLen;
+    std::cout << '\n';
+    std::cout << steps;
+    std::cout << '\n';
 
     double *QHat = new double[two_n];
     std::fill(QHat, QHat + two_n, 0);
@@ -230,11 +235,9 @@ void Solver::SolveConstraintForces(const double ks, const double kd)
     }
 
     // Free all memory.
-    delete[] q;
     delete[] qdot;
     delete[] C;
     delete[] CDot;
-    delete[] M;
     delete[] Q;
     delete[] W;
     delete[] JDotqdot;

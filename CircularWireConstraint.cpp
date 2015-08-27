@@ -20,7 +20,18 @@ void CircularWireConstraint::draw()
 void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
 {
     m_C = sqrMagnitude(m_p->m_Position - m_center) - m_radiusSquared;
-    m_CDot = 0; // Todo: implement this.
+    Vec2f normalAtPoint = normalized(m_p->m_Position - m_center);
+    m_CDot = Dot(m_p->m_Velocity, normalAtPoint); // Todo: check if this is correct.
+}
+
+void CircularWireConstraint::SetCSlice(double C[])
+{
+    C[m_p->m_ID] += m_C;
+}
+
+void CircularWireConstraint::SetCDotSlice(double CDot[])
+{
+    CDot[m_p->m_ID] += m_CDot;
 }
 
 void CircularWireConstraint::draw_circle(const Vec2f & vect, const double radius)

@@ -14,9 +14,9 @@ struct MatrixBlock {
     const int ci; // constraint index
     const int pi; // particle index
 
-    double * const data;
+    const double * const data;
 
-    MatrixBlock(const int ci, const int pi, double * const data) : ci(ci), pi(pi), data(data) {}
+    MatrixBlock(const int ci, const int pi, const double * const data) : ci(ci), pi(pi), data(data) {}
 };
 
 class BlockSparseMatrix : public implicitMatrixWithTrans
@@ -24,7 +24,7 @@ class BlockSparseMatrix : public implicitMatrixWithTrans
 public:
     void matVecMult(double x[], double r[]) override;
     void matTransVecMult(double x[], double r[]) override;
-    void AddNewBlock(const int ci, const int pi, double * const data);
+    void AddNewBlock(const int ci, const int pi, const double * const data);
 private:
     std::vector<MatrixBlock> m_Matrix;
 };

@@ -30,5 +30,17 @@ void RodConstraint::draw()
 void RodConstraint::ApplyForce(const std::vector<Particle*> & pVector)
 {
     m_C = sqrMagnitude(m_p1->m_Position - m_p2->m_Position) - m_distSquared;
-    m_CDot = 0; // Todo: Implement this.
+    m_CDot = sqrMagnitude(m_p1->m_Velocity - m_p2->m_Velocity); // Todo: check if this is correct.
+}
+
+void RodConstraint::SetCSlice(double C[])
+{
+    C[m_p1->m_ID] += m_C;
+    C[m_p2->m_ID] += m_C;
+}
+
+void RodConstraint::SetCDotSlice(double CDot[])
+{
+    CDot[m_p1->m_ID] += m_CDot;
+    CDot[m_p2->m_ID] += m_CDot;
 }

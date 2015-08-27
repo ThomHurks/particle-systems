@@ -8,7 +8,8 @@ public:
     CircularWireConstraint(Particle *p, const Vec2f & center, const double radius);
     void draw() override;
     void ApplyForce(const std::vector<Particle*> & pVector) override;
-
+    void SetCSlice(double C[]) override;
+    void SetCDotSlice(double C[]) override;
 private:
     static void draw_circle(const Vec2f & vect, const double radius);
     Particle * const m_p;
