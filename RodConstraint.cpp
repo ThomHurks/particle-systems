@@ -12,6 +12,7 @@ RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const doub
     // Set up the BSM for the Jacobian:
     J->AddNewBlock(id, p1->m_ID, &m_C);
     J->AddNewBlock(id, p2->m_ID, &m_C);
+    
     // Then set up the BSM for the time derivative of the Jacobian:
     JDot->AddNewBlock(id, p1->m_ID, &m_CDot);
     JDot->AddNewBlock(id, p2->m_ID, &m_CDot);

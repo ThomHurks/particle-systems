@@ -13,10 +13,13 @@
 struct MatrixBlock {
     const int ci; // constraint index
     const int pi; // particle index
+    const int ilength;//width of block (always 1 in our case)
+    const int jlength;//height of block (always 2 in our case)
 
     const double * const data;
 
-    MatrixBlock(const int ci, const int pi, const double * const data) : ci(ci), pi(pi), data(data) {}
+    MatrixBlock(const int ci, const int pi, const int ilength, const int jlength, const double * const data) :
+    ci(ci), pi(pi), ilength(ilength), jlength(jlength), data(data) {}
 };
 
 class BlockSparseMatrix : public implicitMatrixWithTrans
