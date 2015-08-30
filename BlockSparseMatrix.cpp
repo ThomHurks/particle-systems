@@ -24,8 +24,8 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])
             {
                 int i2 = block.ci+i;
                 int j2 = block.pi+j;
-                double val = block.data[i2][j2];
-                double prod = val * x[j2];
+                //double val = block.data[i2][j2];
+                //double prod = val * x[j2];
                 //r[i2]+=prod;
             }
         }
