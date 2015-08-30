@@ -14,8 +14,8 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])
     size_t i,j,k, n;
     for (k = 0, n = m_Matrix.size(); k < n; ++k)
     {
-        r[m_Matrix[k].pi * 2]       += *(m_Matrix[k].data) * x[m_Matrix[k].ci * 2];
-        r[(m_Matrix[k].pi * 2) + 1] += *(m_Matrix[k].data) * x[(m_Matrix[k].ci * 2) + 1];
+        //r[m_Matrix[k].pi * 2]       += *(m_Matrix[k].data) * x[m_Matrix[k].ci * 2];
+        //r[(m_Matrix[k].pi * 2) + 1] += *(m_Matrix[k].data) * x[(m_Matrix[k].ci * 2) + 1];
         
         MatrixBlock block = (m_Matrix[k]);
         for(i=0;i<block.ilength;i++)
@@ -24,9 +24,10 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])
             {
                 int i2 = block.ci+i;
                 int j2 = block.pi+j;
-                //double val = block.data[i2][j2];
-                //double prod = val * x[j2];
-                //r[i2]+=prod;
+                int idex = i*block.jlength+j;
+                double val = block.data[idex];
+                double prod = val * x[j2];
+                r[i2]+=prod;
             }
         }
     }
