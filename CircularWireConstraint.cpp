@@ -18,10 +18,19 @@ Particle *p,
         const int id) :
         Constraint(0, 0), m_p(p), m_center(center), m_radius(radius), m_radiusSquared(radius * radius)
 {
+    const int ilength = 1;
+    const int jlength = 2;
     // Set up the BSM for the Jacobian:
-    J->AddNewBlock(id, p->m_ID,1,2, &m_C);
+    double* *dataBlockJ = new double*[ilength * jlength];
+    // Todo: assign correct values to the data blocks that are pushed into the BSMs.
+    dataBlockJ[0] = &m_C;
+    dataBlockJ[1] = &m_C;
+    J->AddNewBlock(id, p->m_ID, ilength, jlength, dataBlockJ);
     // Then set up the BSM for the time derivative of the Jacobian:
-    JDot->AddNewBlock(id, p->m_ID,1,2, &m_CDot);
+    double* *dataBlockJDot = new double*[ilength * jlength];
+    dataBlockJDot[0] = &m_CDot;
+    dataBlockJDot[1] = &m_CDot;
+    JDot->AddNewBlock(id, p->m_ID, ilength, jlength, dataBlockJDot);
 }
 
 void CircularWireConstraint::draw() const
@@ -39,7 +48,7 @@ void CircularWireConstraint::draw() const
 void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
 {
     Vec2f relative = m_p->m_Position - m_center;
-    m_C = (sqrMagnitude(relative) - m_radiusSquared)/2;
+    m_C = (sqrMagnitude(relative) - m_radiusSquared) / 2;
     m_CDot = Dot(m_p->m_Velocity, relative);
     //m_dCdx = relative;
     //m_dCdotdx = m_p->m_Velocity;
