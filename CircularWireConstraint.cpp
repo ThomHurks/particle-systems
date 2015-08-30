@@ -23,13 +23,13 @@ Particle *p,
     // Set up the BSM for the Jacobian:
     double* *dataBlockJ = new double*[ilength * jlength];
     // Todo: assign correct values to the data blocks that are pushed into the BSMs.
-    dataBlockJ[0] = &m_C;
-    dataBlockJ[1] = &m_C;
+    dataBlockJ[0] = &m_C;//should be: x of m_p.Position-m_c
+    dataBlockJ[1] = &m_C;//should be: y of m_p.Position-m_c
     J->AddNewBlock(id, p->m_ID, ilength, jlength, dataBlockJ);
     // Then set up the BSM for the time derivative of the Jacobian:
     double* *dataBlockJDot = new double*[ilength * jlength];
-    dataBlockJDot[0] = &m_CDot;
-    dataBlockJDot[1] = &m_CDot;
+    dataBlockJDot[0] = &m_CDot;//should be x of m_p.Velocity
+    dataBlockJDot[1] = &m_CDot;//should be y of m_p.Velocity
     JDot->AddNewBlock(id, p->m_ID, ilength, jlength, dataBlockJDot);
 }
 
@@ -50,8 +50,6 @@ void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     Vec2f relative = m_p->m_Position - m_center;
     m_C = (sqrMagnitude(relative) - m_radiusSquared) / 2;
     m_CDot = Dot(m_p->m_Velocity, relative);
-    //m_dCdx = relative;
-    //m_dCdotdx = m_p->m_Velocity;
 }
 
 void CircularWireConstraint::SetCSlice(double C[]) const
