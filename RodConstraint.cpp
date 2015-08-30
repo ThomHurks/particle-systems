@@ -9,13 +9,15 @@ RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const doub
                                           BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id) :
   Constraint(0, 0), m_p1(p1), m_p2(p2), m_distSquared(dist * dist)
 {
+    int blocki = 1;
+    int blockj = 2;
     // Set up the BSM for the Jacobian:
-    J->AddNewBlock(id, p1->m_ID, &m_C);
-    J->AddNewBlock(id, p2->m_ID, &m_C);
+    J->AddNewBlock(id, p1->m_ID,blocki,blockj, &m_C);
+    J->AddNewBlock(id, p2->m_ID,blocki,blockj, &m_C);
     
     // Then set up the BSM for the time derivative of the Jacobian:
-    JDot->AddNewBlock(id, p1->m_ID, &m_CDot);
-    JDot->AddNewBlock(id, p2->m_ID, &m_CDot);
+    JDot->AddNewBlock(id, p1->m_ID,blocki,blockj, &m_CDot);
+    JDot->AddNewBlock(id, p2->m_ID,blocki,blockj, &m_CDot);
 }
 
 void RodConstraint::draw() const

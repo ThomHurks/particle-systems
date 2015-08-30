@@ -19,9 +19,9 @@ Particle *p,
         Constraint(0, 0), m_p(p), m_center(center), m_radius(radius), m_radiusSquared(radius * radius)
 {
     // Set up the BSM for the Jacobian:
-    J->AddNewBlock(id, p->m_ID, &m_C);
+    J->AddNewBlock(id, p->m_ID,1,2, &m_C);
     // Then set up the BSM for the time derivative of the Jacobian:
-    JDot->AddNewBlock(id, p->m_ID, &m_CDot);
+    JDot->AddNewBlock(id, p->m_ID,1,2, &m_CDot);
 }
 
 void CircularWireConstraint::draw() const
