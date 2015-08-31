@@ -59,13 +59,3 @@ void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     m_dCDot_dp_x = m_p->m_Velocity[0];
     m_dCDot_dp_y = m_p->m_Velocity[1];
 }
-
-void CircularWireConstraint::SetCSlice(double C[]) const
-{
-    C[m_p->m_ID] += m_C;
-}
-
-void CircularWireConstraint::SetCDotSlice(double CDot[]) const
-{
-    CDot[m_p->m_ID] += m_CDot;
-}

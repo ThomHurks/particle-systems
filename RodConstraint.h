@@ -10,9 +10,6 @@ public:
                   BlockSparseMatrix * J, BlockSparseMatrix * JDot, const int id);
     void draw() const override;
     void ApplyForce(const std::vector<Particle*> & pVector) override;
-    void SetCSlice(double C[]) const override;
-    void SetCDotSlice(double C[]) const override;
-
 private:
     const Particle * const m_p1;
     const Particle * const m_p2;
