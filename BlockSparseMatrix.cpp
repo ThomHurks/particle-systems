@@ -33,7 +33,7 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
 void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equal (or greater) than the width (greatest ci+ilength) of the maatrix
 {
     size_t i,j,k, n;
-    for (k = 0, n = m_Matrix.size(); k < n; ++i)
+    for (k = 0, n = m_Matrix.size(); k < n; ++k)
     {
         MatrixBlock block = m_Matrix[k];
         for (i = 0; i < block.ilength; ++i)
