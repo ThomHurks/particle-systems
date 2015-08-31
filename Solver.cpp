@@ -147,14 +147,12 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     // Create the C and CDot arrays that contain the constraint derivatives by gathering the C and CDot values.
     // The size of the arrays are n, since each constraint affects one or more particles.
     size_t n_Constraints = m_ConstraintsVector.size();
-    double *C = new double[n];
-    std::fill(C, C + n, 0);
-    double *CDot = new double[n];
-    std::fill(CDot, CDot + n, 0);
+    double *C = new double[n_Constraints];
+    double *CDot = new double[n_Constraints];
     for (i = 0; i < n_Constraints; ++i)
     {
-        (static_cast<Constraint*>(m_ConstraintsVector[i]))->SetCSlice(C);
-        (static_cast<Constraint*>(m_ConstraintsVector[i]))->SetCDotSlice(CDot);
+        C[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetC();
+        CDot[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetCDot();
     }
 
     // Q contains all accumulated forces as 2-vectors. Size is n.
