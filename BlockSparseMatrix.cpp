@@ -18,10 +18,10 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
         for (i = 0; i < block.ilength; ++i)
         {
             size_t gi = block.ci + i;
-            for (j = 0; j < block.jlength; ++j)
+            for (j = 0; j < block.jlength; ++j)//2
             {
                 // Todo: ensure correct indexing into block. done
-                size_t gj = block.pj + j;
+                size_t gj = block.pj*2 + j;
                 double val = *(block.data[block.Index(i, j)]);
                 double prod = val * x[gj];
                 r[gi]+=prod;
@@ -30,7 +30,7 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
     }
 }
 
-void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equal (or greater) than the width (greatest ci+ilength) of the maatrix
+void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equal to the width (greatest ci+ilength) of the maatrix
 {
     size_t i,j,k, n;
     for (k = 0, n = m_Matrix.size(); k < n; ++k)
@@ -42,7 +42,7 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
             for (j = 0; j < block.jlength; ++j)
             {
                 // Todo: ensure correct indexing into block.
-                size_t gj = block.pj + j;
+                size_t gj = 2*block.pj + j;
                 double val = *(block.data[block.Index(i, j)]);
                 double prod = val * x[gi];
                 r[gj]+=prod;
