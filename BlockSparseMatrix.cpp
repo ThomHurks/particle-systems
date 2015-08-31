@@ -37,7 +37,7 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
 void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equal (or greater) than the width (greatest ci+ilength) of the maatrix
 {
     size_t i,j,k, n;
-    for (k = 0, n = m_Matrix.size(); k < n; ++i)
+    for (k = 0, n = m_Matrix.size(); k < n; ++k)
     {
         // Todo: fix this as data is no longer a pointer to a double, but a matrix of pointers to doubles.
         //r[m_Matrix[i].ci * 2] += *(m_Matrix[i].data) * x[m_Matrix[i].pi * 2];
