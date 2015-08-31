@@ -210,8 +210,8 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     }
 
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
-    double *lambda = new double[two_n];
-    std::fill(lambda, lambda + two_n, 0);
+    double *lambda = new double[m];
+    std::fill(lambda, lambda + m, 0);
     JWJTranspose JWJTranspose(two_n, W, m_J);
 
     int n_int = static_cast<int>(two_n);
