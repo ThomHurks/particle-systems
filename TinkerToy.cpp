@@ -123,26 +123,11 @@ static void initTest(void)
 
     int particleID = 0;
     pVector.push_back(new Particle(center + offset, particleID++));
-    pVector.push_back(new Particle(center + offset + offset2, particleID++));
-    pVector.push_back(new Particle(center + offset + offset + offset, particleID++));
-    pVector.push_back(new Particle(center + offset + offset + offset + offset, particleID++));
-    pVector[1]->m_Mass = 100.0;
-
-
-    pVector.push_back(new Particle(center + offset3 + offset3, particleID++));
-    pVector.push_back(new Particle(center + offset3 + offset3 + offset3, particleID++));
-    pVector.push_back(new Particle(center + offset3 + offset3 + offset3 + offset, particleID++));
 
     // You should replace these with a vector generalized forces and one of
     // constraints...
     fVector.push_back(new GravityForce());
-    fVector.push_back(new SpringForce(pVector[0], pVector[1], dist, 1.0, 1.0));
-    fVector.push_back(new SpringForce(pVector[1], pVector[2], dist, 1.0, 1.0));
-    fVector.push_back(new SpringForce(pVector[2], pVector[0], dist, 1.0, 1.0));
-    fVector.push_back(new AngularSpring(pVector[5], pVector[6], pVector[4], PI / 3.0, 0.01, 0.1));
-
     int constraintID = 0;
-    cVector.push_back(new RodConstraint(pVector[2], pVector[3], dist, &J, &JDot, constraintID++));
     cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
 }
 
