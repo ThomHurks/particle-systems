@@ -14,10 +14,6 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
     size_t i, j, k, n;
     for (k = 0, n = m_Matrix.size(); k < n; ++k)
     {
-        // Todo: fix this as data is no longer a pointer to a double, but a matrix of pointers to doubles.
-        //r[m_Matrix[k].pi * 2]       += *(m_Matrix[k].data) * x[m_Matrix[k].ci * 2];
-        //r[(m_Matrix[k].pi * 2) + 1] += *(m_Matrix[k].data) * x[(m_Matrix[k].ci * 2) + 1];
-        
         MatrixBlock block = m_Matrix[k];
         for (i = 0; i < block.ilength; ++i)
         {
@@ -27,8 +23,8 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
                 // Todo: ensure correct indexing into block. done
                 size_t gj = block.pj + j;
                 double val = *(block.data[block.Index(i, j)]);
-                double prod = val * x[gi];
-                r[gj]+=prod;
+                double prod = val * x[gj];
+                r[gi]+=prod;
             }
         }
     }
@@ -39,10 +35,6 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
     size_t i,j,k, n;
     for (k = 0, n = m_Matrix.size(); k < n; ++i)
     {
-        // Todo: fix this as data is no longer a pointer to a double, but a matrix of pointers to doubles.
-        //r[m_Matrix[i].ci * 2] += *(m_Matrix[i].data) * x[m_Matrix[i].pi * 2];
-        //r[(m_Matrix[i].ci * 2) + 1] += *(m_Matrix[i].data) * x[(m_Matrix[i].pi * 2) + 1];
-        
         MatrixBlock block = m_Matrix[k];
         for (i = 0; i < block.ilength; ++i)
         {
@@ -52,8 +44,8 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
                 // Todo: ensure correct indexing into block.
                 size_t gj = block.pj + j;
                 double val = *(block.data[block.Index(i, j)]);
-                double prod = val * x[gj];
-                r[gi]+=prod;
+                double prod = val * x[gi];
+                r[gj]+=prod;
             }
         }
     }
