@@ -138,7 +138,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     const size_t m = m_ConstraintsVector.size();
 
     // qdot contains all velocities, but each dimension is stored separately as a double. The size is 2n.
-    double *qdot = new double[2 * n];
+    double *qdot = new double[two_n];
     for (i = 0; i < n; ++i)
     {
         qdot[i * 2] = m_ParticlesVector[i]->m_Velocity[0];
@@ -211,18 +211,18 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     std::fill(lambda, lambda + m, 0);
     JWJTranspose JWJTranspose(two_n, W, m_J);//two_n is the dimension of the intermediate vector, which is correct
 
-    int n_int = static_cast<int>(two_n);
+    int m_int = static_cast<int>(m);
     int steps = 0; // 0 implies MAX_STEPS.
     std::cout << "Calling conjugate gradient algorithm...\n";
-    double rSqrLen = ConjGrad(n_int, &JWJTranspose, rightHandSide, lambda, epsilon, &steps);
+    double rSqrLen = ConjGrad(m_int, &JWJTranspose, rightHandSide, lambda, epsilon, &steps);
     std::cout << rSqrLen;
     std::cout << '\n';
     std::cout << steps;
     std::cout << '\n';
 
-    double *QHat = new double[two_n];//consraint forces -> length 2n
+    double *QHat = new double[two_n]; //constraint forces -> length 2n
     std::fill(QHat, QHat + two_n, 0);
-    m_J.matTransVecMult(lambda, QHat);//lambda has size m, so multiplying with JTrans yields a 2n vector
+    m_J.matTransVecMult(lambda, QHat); //lambda has size m, so multiplying with JTrans yields a 2n vector
     for(i = 0; i < n; ++i)
     {
         Vec2f constrainingForce = Vec2f(static_cast<float>(QHat[i * 2]), static_cast<float>(QHat[(i * 2) + 1]));
