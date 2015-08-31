@@ -18,4 +18,8 @@ private:
     Vec2f const m_center;
     double const m_radius;
     double const m_radiusSquared;
+    double m_dC_dp_x;
+    double m_dC_dp_y;
+    double m_dCDot_dp_x;
+    double m_dCDot_dp_y;
 };
