@@ -183,7 +183,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
         WQ[(i * 2) + 1] = W[i] * Q[i][1];
     }
 
-    // Then calculate J times WQ. The result is a vector of size 2n since each dimension is stored separately.
+    // Then calculate J times WQ. The result is a vector of size m.
     double *JWQ = new double[m];
     std::fill(JWQ, JWQ + m, 0);
     m_J.matVecMult(WQ, JWQ);
@@ -212,7 +212,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double *lambda = new double[m];
     std::fill(lambda, lambda + m, 0);
-    JWJTranspose JWJTranspose(two_n, W, m_J);
+    JWJTranspose JWJTranspose(two_n, W, m_J);//two_n is the dimension of the intermediate vector, which is correct
 
     int n_int = static_cast<int>(two_n);
     int steps = 0; // 0 implies MAX_STEPS.
@@ -223,9 +223,9 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     std::cout << steps;
     std::cout << '\n';
 
-    double *QHat = new double[two_n];
+    double *QHat = new double[two_n];//consraint forces -> length 2n
     std::fill(QHat, QHat + two_n, 0);
-    m_J.matTransVecMult(lambda, QHat);
+    m_J.matTransVecMult(lambda, QHat);//lambda has size m, so multiplying with JTrans yields a 2n vector
     for(i = 0; i < n; ++i)
     {
         Vec2f constrainingForce = Vec2f(static_cast<float>(QHat[i * 2]), static_cast<float>(QHat[(i * 2) + 1]));
