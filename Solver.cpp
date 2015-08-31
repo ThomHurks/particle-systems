@@ -135,6 +135,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     size_t i;
     size_t n = m_ParticlesVector.size();
     size_t two_n = 2 * n;
+    size_t m = m_ConstraintsVector.size();
 
     // qdot contains all velocities, but each dimension is stored separately as a double. The size is 2n.
     double *qdot = new double[2 * n];
@@ -165,13 +166,13 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     // W contains the inverse of all particle masses as a double array of size n.
     double *W = new double[n];
     for (i = 0; i < n; ++i)
-    { W[i] = 1 / m_ParticlesVector[i]->m_Mass; }
+    { W[i] = 1.0 / m_ParticlesVector[i]->m_Mass; }
 
     // Start computing equation 11:
 
     // First calculate m_JDot times qdot. The result is a vector of size 2n since each dimension is stored separately.
-    double *JDotqdot = new double[two_n];
-    std::fill(JDotqdot, JDotqdot + two_n, 0);
+    double *JDotqdot = new double[m];
+    std::fill(JDotqdot, JDotqdot + m, 0);
     m_JDot.matVecMult(qdot, JDotqdot);
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
@@ -183,29 +184,27 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     }
 
     // Then calculate J times WQ. The result is a vector of size 2n since each dimension is stored separately.
-    double *JWQ = new double[two_n];
-    std::fill(JWQ, JWQ + two_n, 0);
+    double *JWQ = new double[m];
+    std::fill(JWQ, JWQ + m, 0);
     m_J.matVecMult(WQ, JWQ);
 
-    // Then calculate ks times C. C has size n, but we need 2n, so duplicate all values.
-    double *ksC = new double[two_n];
-    for (i = 0; i < n; ++i)
+    // Then calculate ks times C. C has size m
+    double *ksC = new double[m];
+    for (i = 0; i < m; ++i)
     {
-        ksC[i * 2] = ks * C[i];
-        ksC[(i * 2) + 1] = ks * C[i];
+        ksC[i] = ks * C[i];
     }
 
-    // Then calculate kd times CDot. CDot has size n, but we need 2n, so duplicate all values.
-    double *kdCDot = new double[two_n];
-    for (i = 0; i < n; ++i)
+    // Then calculate kd times CDot. CDot has size m.
+    double *kdCDot = new double[m];
+    for (i = 0; i < m; ++i)
     {
-        kdCDot[i * 2] = kd * CDot[i];
-        kdCDot[(i * 2) + 1] = kd * CDot[i];
+        kdCDot[i] = kd * CDot[i];
     }
 
-    // Now compute the entire right side of equation 11. The result is a double vector of size 2n.
-    double *rightHandSide = new double[two_n];
-    for (i = 0; i < two_n; ++i)
+    // Now compute the entire right side of equation 11. The result is a double vector of size m.
+    double *rightHandSide = new double[m];
+    for (i = 0; i < m; ++i)
     {
         rightHandSide[i] = -JDotqdot[i] - JWQ[i] - ksC[i] - kdCDot[i];
     }
