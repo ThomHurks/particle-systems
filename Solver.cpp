@@ -133,9 +133,9 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
 {
     // Preparing variables for equation 11:
     size_t i;
-    size_t n = m_ParticlesVector.size();
-    size_t two_n = 2 * n;
-    size_t m = m_ConstraintsVector.size();
+    const size_t n = m_ParticlesVector.size();
+    const size_t two_n = 2 * n;
+    const size_t m = m_ConstraintsVector.size();
 
     // qdot contains all velocities, but each dimension is stored separately as a double. The size is 2n.
     double *qdot = new double[2 * n];
