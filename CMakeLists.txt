@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(tue_scg_particle_systems)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -Wall -Wno-sign-compare -Woverloaded-virtual -Iinclude -DHAVE_CONFIG_H")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g -Wall -Wextra -Wmissing-declarations -Wnull-dereference -Wswitch-default -Wswitch-enum -Wuninitialized -Wbad-function-cast -Wabstract-final-class -Wfloat-equal -Wcast-qual -Woverloaded-virtual -Wno-sign-compare -Wno-deprecated-declarations -Iinclude -DHAVE_CONFIG_H")
 
 set(SOURCE_FILES
         include/gfx/config.h
