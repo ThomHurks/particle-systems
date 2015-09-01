@@ -33,4 +33,6 @@ public:
     void print();
 private:
     std::vector<MatrixBlock> m_Matrix;
+    int m_Width;
+    int m_Height;
 };

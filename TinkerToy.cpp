@@ -86,14 +86,69 @@ static void free_data(void)
 static void init(void)
 {
     BlockSparseMatrix M;
+    double* *dataBlock1 = new double*[2];
+    double* *dataBlock2 = new double*[2];
+    double* *dataBlock3 = new double*[2];
+    dataBlock1[0] = new double[1];
+    dataBlock1[0][0]=1.0;
+    dataBlock1[1] = new double[1];
+    dataBlock1[1][0]=1.0;
+    dataBlock2[0] = new double[1];
+    dataBlock2[0][0]=1.0;
+    dataBlock2[1] = new double[1];
+    dataBlock2[1][0]=1.0;
+    dataBlock3[0] = new double[1];
+    dataBlock3[0][0]=1.0;
+    dataBlock3[1] = new double[1];
+    dataBlock3[1][0]=1.0;
+    
+    M.AddNewBlock(0,0,1,2,dataBlock1);
+    M.AddNewBlock(1,0,1,2,dataBlock2);
+    M.AddNewBlock(2,0,1,2,dataBlock3);
+    std::cout<<"M:"<<std::endl;
+    M.print();
+    
+    double* x = new double[3];
+    x[0]=1.0;
+    x[1]=2.0;
+    x[2]=3.0;
+    int i;
+    
+    std::cout<<"x: ";
+    for(i=0; i < 3;i++)
+    {
+        std::cout<<x[i]<<" ";
+    }
+    std::cout<<std::endl;
+    double* v = new double[2];
+    std::fill(v,v+2,0);
+    M.matVecMult(x,v);
+    std::cout<<"v: ";
+    for(i=0; i < 2;i++)
+    {
+        std::cout<<v[i]<<" ";
+    }
+    std::cout<<std::endl;
     
     
-    
-    
-    
-    
-    
-    
+    double* x2 = new double[2];
+    x2[0]=1.0;
+    x2[1]=2.0;
+    std::cout<<"x2: ";
+    for(i=0; i < 2;i++)
+    {
+        std::cout<<x2[i]<<" ";
+    }
+    std::cout<<std::endl;
+    double* v2 = new double[3];
+    std::fill(v2,v2+3,0);
+    M.matTransVecMult(x2,v2);
+    std::cout<<"v2: ";
+    for(i=0; i < 3;i++)
+    {
+        std::cout<<v2[i]<<" ";
+    }
+    std::cout<<std::endl;
     
     
     

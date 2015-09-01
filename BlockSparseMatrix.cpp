@@ -21,8 +21,8 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
                 // Todo: ensure correct indexing into block. done
                 size_t gj = block.pj * 2 + j;
                 double val = *(block.data[block.Index(i, j)]);
-                double prod = val * x[gj];
-                r[gi] += prod;
+                double prod = val * x[gi];
+                r[gj] += prod;
             }
         }
     }
@@ -39,8 +39,8 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
                 // Todo: ensure correct indexing into block.
                 size_t gj = 2 * block.pj + j;
                 double val = *(block.data[block.Index(i, j)]);
-                double prod = val * x[gi];
-                r[gj] += prod;
+                double prod = val * x[gj];
+                r[gi] += prod;
             }
         }
     }
@@ -49,6 +49,9 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
 void BlockSparseMatrix::AddNewBlock(const int ci, const int pi, const int ilength, const int jlength, double* const data[])
 {
     m_Matrix.push_back(MatrixBlock(ci, pi, ilength, jlength, data));
+    m_Height = std::max(m_Height,2*pi+2);//every particle and every constraint have at least 1 block.
+    //TODO: Not the case in current implementation,  => uncontrained particles do not have blocks, but should have rows.
+    m_Width = std::max(m_Width,ci+1);
 }
 
 void BlockSparseMatrix::print()
@@ -81,6 +84,7 @@ void BlockSparseMatrix::print()
             }
         }
     }
+    std::cout<<"WxH = " << m_Width <<"x"<<m_Height<<std::endl;
     for(int j=0; j<dimj; j++) 
 	{
 		for(int i=0; i<dimi; i++)
