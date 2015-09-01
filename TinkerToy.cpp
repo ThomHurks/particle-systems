@@ -85,6 +85,20 @@ static void free_data(void)
 
 static void init(void)
 {
+    BlockSparseMatrix M;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // ks and kd are spring and damping constants for the constraint forces in equation 11.
     double ks = 0.5;
     double kd = 0.5;
