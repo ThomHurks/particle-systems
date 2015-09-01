@@ -20,7 +20,8 @@ struct MatrixBlock {
     MatrixBlock(const int ci, const int pj, const int ilength, const int jlength, double* const data[]) :
     ci(ci), pj(pj), ilength(ilength), jlength(jlength), data(data) {}
 
-    size_t Index(const size_t i, const size_t j) const { return (j * ilength) + i; }
+    size_t Index(const size_t i, const size_t j) const { return (j * ilength) + i;}
+    
 };
 
 class BlockSparseMatrix : public implicitMatrixWithTrans
@@ -29,6 +30,7 @@ public:
     void matVecMult(double x[], double r[]) override;
     void matTransVecMult(double x[], double r[]) override;
     void AddNewBlock(const int ci, const int pj, const int ilength, const int jlength, double* const data[]);
+    void print();
 private:
     std::vector<MatrixBlock> m_Matrix;
 };

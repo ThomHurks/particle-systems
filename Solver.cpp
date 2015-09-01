@@ -131,6 +131,11 @@ void Solver::ParticleDerivative(std::vector<Vec2fTuple> & dVector)
 // Equation 11
 void Solver::SolveConstraintForces(const double ks, const double kd, const double epsilon)
 {
+    std::cout <<"J:"<<std::endl;
+    m_J.print();
+    std::cout << "Jdot"<<std::endl;
+    m_JDot.print();
+    
     // Preparing variables for equation 11:
     size_t i;
     const size_t n = m_ParticlesVector.size();
