@@ -14,4 +14,12 @@ private:
     const Particle * const m_p1;
     const Particle * const m_p2;
     const double m_distSquared;
+    double m_dC_dp1_x;
+    double m_dC_dp1_y;
+    double m_dCDot_dp1_x;
+    double m_dCDot_dp1_y;
+    double m_dC_dp2_x;
+    double m_dC_dp2_y;
+    double m_dCDot_dp2_x;
+    double m_dCDot_dp2_y;
 };

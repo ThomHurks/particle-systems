@@ -85,6 +85,7 @@ static void free_data(void)
 
 static void init(void)
 {
+    /*
     BlockSparseMatrix M;
     double* *dataBlock1 = new double*[2];
     double* *dataBlock2 = new double*[2];
@@ -92,15 +93,15 @@ static void init(void)
     dataBlock1[0] = new double[1];
     dataBlock1[0][0]=1.0;
     dataBlock1[1] = new double[1];
-    dataBlock1[1][0]=1.0;
+    dataBlock1[1][0]=2.0;
     dataBlock2[0] = new double[1];
-    dataBlock2[0][0]=1.0;
+    dataBlock2[0][0]=3.0;
     dataBlock2[1] = new double[1];
-    dataBlock2[1][0]=1.0;
+    dataBlock2[1][0]=4.0;
     dataBlock3[0] = new double[1];
-    dataBlock3[0][0]=1.0;
+    dataBlock3[0][0]=5.0;
     dataBlock3[1] = new double[1];
-    dataBlock3[1][0]=1.0;
+    dataBlock3[1][0]=6.0;
     
     M.AddNewBlock(0,0,1,2,dataBlock1);
     M.AddNewBlock(1,0,1,2,dataBlock2);
@@ -149,7 +150,7 @@ static void init(void)
         std::cout<<v2[i]<<" ";
     }
     std::cout<<std::endl;
-    
+    */
     
     
     
@@ -192,12 +193,14 @@ static void initTest(void)
 
     int particleID = 0;
     pVector.push_back(new Particle(center + offset, particleID++));
+   // pVector.push_back(new Particle(center + offset+ offset, particleID++));
 
     // You should replace these with a vector generalized forces and one of
     // constraints...
     fVector.push_back(new GravityForce());
     int constraintID = 0;
     cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
+    //cVector.push_back(new RodConstraint(pVector[0],pVector[1],dist,&J, &JDot, constraintID++));
 }
 
 static void initCloth(bool crossFibers)

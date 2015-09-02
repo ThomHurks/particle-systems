@@ -21,8 +21,8 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
                 // Todo: ensure correct indexing into block. done
                 size_t gj = block.pj * 2 + j;
                 double val = *(block.data[block.Index(i, j)]);
-                double prod = val * x[gi];
-                r[gj] += prod;
+                double prod = val * x[gj];
+                r[gi] += prod;
             }
         }
     }
@@ -39,8 +39,8 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
                 // Todo: ensure correct indexing into block.
                 size_t gj = 2 * block.pj + j;
                 double val = *(block.data[block.Index(i, j)]);
-                double prod = val * x[gj];
-                r[gi] += prod;
+                double prod = val * x[gi];
+                r[gj] += prod;
             }
         }
     }

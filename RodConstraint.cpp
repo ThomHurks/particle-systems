@@ -14,24 +14,24 @@ RodConstraint::RodConstraint(const Particle *p1, const Particle * p2, const doub
     // Set up the BSM for the Jacobian:
     // Todo: assign correct values to the data blocks that are pushed into the BSMs.
     double* *dataBlockJp1 = new double*[ilength * jlength];
-    dataBlockJp1[0] = &m_C;//should be x of m_p1.position-m_p2.position
-    dataBlockJp1[1] = &m_C;//should be y of m_p1.position-m_p2.position
+    dataBlockJp1[0] = &m_dC_dp1_x;//should be x of m_p1.position-m_p2.position
+    dataBlockJp1[1] = &m_dC_dp1_y;//should be y of m_p1.position-m_p2.position
     
     double* *dataBlockJp2 = new double*[ilength * jlength];
-    dataBlockJp2[0] = &m_C;//should be x of m_p2.position-m_p1.position
-    dataBlockJp2[1] = &m_C;//should be y of m_p2.position-m_p1.position
+    dataBlockJp2[0] = &m_dC_dp2_x;//should be x of m_p2.position-m_p1.position
+    dataBlockJp2[1] = &m_dC_dp2_y;//should be y of m_p2.position-m_p1.position
     
     J->AddNewBlock(id, p1->m_ID, ilength, jlength, dataBlockJp1);
     J->AddNewBlock(id, p2->m_ID, ilength, jlength, dataBlockJp2);
     
     // Then set up the BSM for the time derivative of the Jacobian:
     double* *dataBlockJDotp1 = new double*[ilength * jlength];
-    dataBlockJDotp1[0] = &m_CDot;//should be x of m_p1.velocity-m_p2.velocity
-    dataBlockJDotp1[1] = &m_CDot;//should be y of m_p1.velocity-m_p2.velocity
+    dataBlockJDotp1[0] = &m_dCDot_dp1_x;//should be x of m_p1.velocity-m_p2.velocity
+    dataBlockJDotp1[1] = &m_dCDot_dp1_y;//should be y of m_p1.velocity-m_p2.velocity
     
     double* *dataBlockJDotp2 = new double*[ilength * jlength];
-    dataBlockJDotp2[0] = &m_CDot;//should be x of m_p2.velocity-m_p1.velocity
-    dataBlockJDotp2[1] = &m_CDot;//should be y of m_p2.velocity-m_p1.velocity
+    dataBlockJDotp2[0] = &m_dCDot_dp2_x;//should be x of m_p2.velocity-m_p1.velocity
+    dataBlockJDotp2[1] = &m_dCDot_dp2_y;//should be y of m_p2.velocity-m_p1.velocity
     
     JDot->AddNewBlock(id, p1->m_ID, ilength, jlength, dataBlockJDotp1);
     JDot->AddNewBlock(id, p2->m_ID, ilength, jlength, dataBlockJDotp2);
@@ -49,6 +49,20 @@ void RodConstraint::draw() const
 
 void RodConstraint::ApplyForce(const std::vector<Particle*> & pVector)
 {
-    m_C = (sqrMagnitude(m_p1->m_Position - m_p2->m_Position) - m_distSquared)/2;
-    m_CDot = Dot(m_p1->m_Velocity-m_p2->m_Velocity,m_p1->m_Position-m_p2->m_Position); // Todo: check if this is correct.
+    Vec2f dp = m_p1->m_Position - m_p2->m_Position;
+    Vec2f dv = m_p1->m_Velocity - m_p2->m_Velocity;
+    m_C = (sqrMagnitude(dp) - m_distSquared)/2;
+    m_CDot = Dot(dv,dp);
+    
+    m_dC_dp1_x=dp[0];//should be x of m_p1.position-m_p2.position
+    m_dC_dp1_y=dp[1];//should be y of m_p1.position-m_p2.position
+    
+    m_dC_dp2_x=-dp[0];//should be x of m_p2.position-m_p1.position
+    m_dC_dp2_y=-dp[1];//should be y of m_p2.position-m_p1.position
+    
+    m_dCDot_dp1_x=dv[0];//should be x of m_p1.velocity-m_p2.velocity
+    m_dCDot_dp1_y=dv[1];//should be y of m_p1.velocity-m_p2.velocity
+    
+    m_dCDot_dp2_x=-dv[0];//should be x of m_p2.velocity-m_p1.velocity
+    m_dCDot_dp2_y=-dv[1];//should be y of m_p2.velocity-m_p1.velocity
 }

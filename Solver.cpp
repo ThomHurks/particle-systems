@@ -159,7 +159,42 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
         C[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetC();
         CDot[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetCDot();
     }
+    /*Debugging lines
+    std::cout<<"C:"<<std::endl;
+    for(i = 0; i < m; i++)
+    {
+        std::cout<<C[i]<<", ";
+    }
+    std::cout<<std::endl<<"Cdot:"<<std::endl;
 
+    for(i = 0; i < m; i++)
+    {
+        std::cout<<CDot[i]<<", ";
+    }
+    std::cout<<std::endl;
+    
+    //VERFICATION:
+    double* Cdot2 = new double[m];
+    std::fill(Cdot2,Cdot2+m,0.0);
+    m_J.matVecMult(qdot,Cdot2);
+    
+    std::cout<<std::endl<<"qdot:"<<std::endl;
+
+    for(i = 0; i < 2*n; i++)
+    {
+        std::cout<<qdot[i]<<", ";
+    }
+    std::cout<<std::endl;
+    
+    std::cout<<"Cdot2:"<<std::endl;
+
+    for(i = 0; i < m; i++)
+    {
+        std::cout<<Cdot2[i]<<", ";
+    }
+    std::cout<<std::endl;
+    //END VERFICATION*/
+    
     // Q contains all accumulated forces as 2-vectors. Size is n.
     Vec2f *Q = new Vec2f[n];
     for (i = 0; i < n; ++i)
@@ -174,7 +209,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
 
     // First calculate m_JDot times qdot. The result is a vector of size 2n since each dimension is stored separately.
     double *JDotqdot = new double[m];
-    std::fill(JDotqdot, JDotqdot + m, 0);
+    std::fill(JDotqdot, JDotqdot + m, 0.0);
     m_JDot.matVecMult(qdot, JDotqdot);
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
@@ -187,7 +222,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
 
     // Then calculate J times WQ. The result is a vector of size m.
     double *JWQ = new double[m];
-    std::fill(JWQ, JWQ + m, 0);
+    std::fill(JWQ, JWQ + m, 0.0);
     m_J.matVecMult(WQ, JWQ);
 
     // Then calculate ks times C. C has size m
@@ -213,23 +248,22 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
 
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double *lambda = new double[m];
-    std::fill(lambda, lambda + m, 0);
+    std::fill(lambda, lambda + m, 0.0);
     JWJTranspose JWJTranspose(two_n, W, m_J);//two_n is the dimension of the intermediate vector, which is correct
 
     int m_int = static_cast<int>(m);
-    int steps = 0; // 0 implies MAX_STEPS.
+    int steps = 10000; // 0 implies MAX_STEPS.
     std::cout << "Calling conjugate gradient algorithm...\n";
-    double rSqrLen = ConjGrad(m_int, &JWJTranspose, rightHandSide, lambda, epsilon, &steps);
-    std::cout << rSqrLen;
-    std::cout << '\n';
-    std::cout << steps;
-    std::cout << '\n';
+    double rSqrLen = ConjGrad(m_int, &JWJTranspose,lambda,rightHandSide, epsilon, &steps);
+    std::cout << rSqrLen<<std::endl;
+    std::cout << steps<<std::endl;
 
     double *QHat = new double[two_n]; //constraint forces -> length 2n
-    std::fill(QHat, QHat + two_n, 0);
+    std::fill(QHat, QHat + two_n, 0.0);
     m_J.matTransVecMult(lambda, QHat); //lambda has size m, so multiplying with JTrans yields a 2n vector
     for(i = 0; i < n; ++i)
     {
+        std::cout<<QHat[2*i]<<", "<<QHat[2*i+1]<<std::endl;
         Vec2f constrainingForce = Vec2f(static_cast<float>(QHat[i * 2]), static_cast<float>(QHat[(i * 2) + 1]));
         if (!isnan(constrainingForce))
         { m_ParticlesVector[i]->m_AccumulatedForce += constrainingForce; }
