@@ -116,15 +116,16 @@ void Solver::ParticleDerivative(std::vector<Vec2fTuple> & dVector)
     // First calculate forces:
     CalculateForces(m_ParticlesVector, m_ForcesVector);
     // Then calculate constraint forces:
-    CalculateForces(m_ParticlesVector, m_ConstraintsVector);
+    CalculateForces(m_ParticlesVector, m_ConstraintsVector);//What this does is fill J, Jdot, C and Cdot
     // Then solve for the constraint force on each particle: (this is equation 11)
     SolveConstraintForces(m_ks, m_kd, m_epsilon);
     // Then derivatives:
     size_t i, n = dVector.size();
     for (i = 0; i < n; ++i)
     {
-        dVector[i].vec1 = m_ParticlesVector[i]->m_Velocity; // XDot
-        dVector[i].vec2 = m_ParticlesVector[i]->m_AccumulatedForce / m_ParticlesVector[i]->m_Mass; // VDot
+        Particle* p = m_ParticlesVector[i];
+        dVector[i].vec1 = p->m_Velocity; // XDot
+        dVector[i].vec2 = p->m_AccumulatedForce / p->m_Mass; // VDot
     }
 }
 
@@ -213,7 +214,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     m_JDot.matVecMult(qdot, JDotqdot);
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
-    double *WQ = new double[two_n];
+    double *WQ = new double[two_n];//W*Q = qDotDot
     for (i = 0; i < n; ++i)
     {
         WQ[i * 2] = W[i] * Q[i][0];
@@ -221,7 +222,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     }
 
     // Then calculate J times WQ. The result is a vector of size m.
-    double *JWQ = new double[m];
+    double *JWQ = new double[m]; //= Cdotdot
     std::fill(JWQ, JWQ + m, 0.0);
     m_J.matVecMult(WQ, JWQ);
 
@@ -252,9 +253,9 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     JWJTranspose JWJTranspose(two_n, W, m_J);//two_n is the dimension of the intermediate vector, which is correct
 
     int m_int = static_cast<int>(m);
-    int steps = 10000; // 0 implies MAX_STEPS.
+    int steps = 0; // 0 implies MAX_STEPS.
     std::cout << "Calling conjugate gradient algorithm...\n";
-    double rSqrLen = ConjGrad(m_int, &JWJTranspose,lambda,rightHandSide, epsilon, &steps);
+    double rSqrLen = ConjGrad(m_int, &JWJTranspose,lambda,rightHandSide, epsilon, &steps);// solve JWJT lambda = righthandside for lambda
     std::cout << rSqrLen<<std::endl;
     std::cout << steps<<std::endl;
 
@@ -263,7 +264,6 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     m_J.matTransVecMult(lambda, QHat); //lambda has size m, so multiplying with JTrans yields a 2n vector
     for(i = 0; i < n; ++i)
     {
-        std::cout<<QHat[2*i]<<", "<<QHat[2*i+1]<<std::endl;
         Vec2f constrainingForce = Vec2f(static_cast<float>(QHat[i * 2]), static_cast<float>(QHat[(i * 2) + 1]));
         if (!isnan(constrainingForce))
         { m_ParticlesVector[i]->m_AccumulatedForce += constrainingForce; }

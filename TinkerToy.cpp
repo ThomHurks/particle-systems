@@ -12,6 +12,7 @@
 #include "imageio.h"
 #include "MouseSpringForce.h"
 #include "AngularSpring.h"
+#include "FixedPointConstraint.h"
 
 #include <vector>
 #include <stdlib.h>
@@ -156,10 +157,10 @@ static void init(void)
     
     
     // ks and kd are spring and damping constants for the constraint forces in equation 11.
-    double ks = 0.5;
-    double kd = 0.5;
+    double ks = 1;
+    double kd = 1;
     // epsilon is how low the linear conjugate gradient solver should go.
-    double epsilon = 0.1;
+    double epsilon = 0.00000001;
     if (!solver)
     { solver = new Solver(pVector, fVector, cVector, J, JDot, ks, kd, epsilon); }
 
@@ -193,14 +194,19 @@ static void initTest(void)
 
     int particleID = 0;
     pVector.push_back(new Particle(center + offset, particleID++));
-   // pVector.push_back(new Particle(center + offset+ offset, particleID++));
+    pVector.push_back(new Particle(center + offset+ offset, particleID++));
+    
+    pVector.push_back(new Particle(center + offset+ offset+ offset, particleID++));
 
     // You should replace these with a vector generalized forces and one of
     // constraints...
     fVector.push_back(new GravityForce());
+    fVector.push_back(new SpringForce(pVector[0],pVector[1],dist,1,1));
     int constraintID = 0;
     cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
     //cVector.push_back(new RodConstraint(pVector[0],pVector[1],dist,&J, &JDot, constraintID++));
+    cVector.push_back(new FixedPointConstraint(pVector[2], center + offset+ offset+ offset, &J, &JDot, constraintID++));
+    
 }
 
 static void initCloth(bool crossFibers)
