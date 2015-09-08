@@ -33,7 +33,9 @@ void Solver::EulerSolver(const double dt)
     for (ii = 0; ii < size; ii++)
     {
         m_ParticlesVector[ii]->m_Position += dVector[ii].vec1; // XDot
+        assert(!isnan(m_ParticlesVector[ii]->m_Position) && isfinite(m_ParticlesVector[ii]->m_Position));
         m_ParticlesVector[ii]->m_Velocity += dVector[ii].vec2; // VDot
+        assert(!isnan(m_ParticlesVector[ii]->m_Velocity) && isfinite(m_ParticlesVector[ii]->m_Velocity));
     }
 }
 
@@ -121,12 +123,14 @@ void Solver::ParticleDerivative(std::vector<Vec2fTuple> & dVector)
     // Then solve for the constraint force on each particle: (this is equation 11)
     SolveConstraintForces(m_ks, m_kd, m_epsilon);
     // Then derivatives:
-    size_t i, n = dVector.size();
-    for (i = 0; i < n; ++i)
+    size_t i, n;
+    for (i = 0, n = dVector.size(); i < n; ++i)
     {
         Particle* p = m_ParticlesVector[i];
         dVector[i].vec1 = p->m_Velocity; // XDot
         dVector[i].vec2 = p->m_AccumulatedForce / p->m_Mass; // VDot
+        assert(!isnan(dVector[i].vec1) && isfinite(dVector[i].vec1));
+        assert(!isnan(dVector[i].vec2) && isfinite(dVector[i].vec2));
     }
 }
 
@@ -268,7 +272,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     int m_int = static_cast<int>(m);
     int steps = 0; // 0 implies MAX_STEPS.
     std::cout << "Calling conjugate gradient algorithm...\n";
-    double rSqrLen = ConjGrad(m_int, &JWJTranspose,lambda,rightHandSide, epsilon, &steps);// solve JWJT lambda = righthandside for lambda
+    double rSqrLen = ConjGrad(m_int, &JWJTranspose, lambda, rightHandSide, epsilon, &steps);// solve JWJT lambda = righthandside for lambda
     for (i = 0; i < m; ++i) { assert(!isnan(lambda[i]) && isfinite(lambda[i])); }
     std::cout << rSqrLen<<std::endl;
     std::cout << steps<<std::endl;
