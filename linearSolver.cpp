@@ -1,35 +1,57 @@
+#include <assert.h>
 #include "linearSolver.h"
 
 // vector helper functions
 
-void vecAddEqual(int n, double r[], double v[]) {
+void vecAddEqual(int n, double r[], double v[])
+{
     for (int i = 0; i < n; i++)
-    { r[i] = r[i] + v[i]; }
+    {
+        r[i] = r[i] + v[i];
+        assert(!isnan(r[i]) && isfinite(r[i]));
+    }
 }
 
-void vecDiffEqual(int n, double r[], double v[]) {
+void vecDiffEqual(int n, double r[], double v[])
+{
     for (int i = 0; i < n; i++)
-    { r[i] = r[i] - v[i]; }
+    {
+        r[i] = r[i] - v[i];
+        assert(!isnan(r[i]) && isfinite(r[i]));
+    }
 }
 
-void vecAssign(int n, double v1[], double v2[]) {
+void vecAssign(int n, double v1[], double v2[])
+{
     for (int i = 0; i < n; i++)
-    { v1[i] = v2[i]; }
+    {
+        v1[i] = v2[i];
+        assert(!isnan(v1[i]) && isfinite(v1[i]));
+    }
 }
 
-void vecTimesScalar(int n, double v[], double s) {
+void vecTimesScalar(int n, double v[], double s)
+{
     for (int i = 0; i < n; i++)
-    { v[i] *= s; }
+    {
+        v[i] *= s;
+        assert(!isnan(v[i]) && isfinite(v[i]));
+    }
 }
 
-double vecDot(int n, double v1[], double v2[]) {
+double vecDot(int n, double v1[], double v2[])
+{
     double dot = 0;
     for (int i = 0; i < n; i++)
-    { dot += v1[i] * v2[i]; }
+    {
+        dot += v1[i] * v2[i];
+        assert(!isnan(dot) && isfinite(dot));
+    }
     return dot;
 }
 
-double vecSqrLen(int n, double v[]) {
+double vecSqrLen(int n, double v[])
+{
     return vecDot(n, v, v);
 }
 
@@ -52,6 +74,7 @@ double ConjGrad(int n, implicitMatrix *A, double x[], double b[],
     vecDiffEqual(n, r, temp);
 
     rSqrLen = vecSqrLen(n, r);
+    assert(!isnan(rSqrLen) && isfinite(rSqrLen));
 
     vecAssign(n, d, r);
 
@@ -77,6 +100,7 @@ double ConjGrad(int n, implicitMatrix *A, double x[], double b[],
 
             // How far should we go?
             alpha = rSqrLen / u;
+            assert(!isnan(alpha) && isfinite(alpha));
 
             // Take a step along direction d
             vecAssign(n, temp, d);
@@ -106,6 +130,7 @@ double ConjGrad(int n, implicitMatrix *A, double x[], double b[],
 
             // Change direction: d = r + beta * d
             beta = rSqrLen / rSqrLenOld;
+            assert(!isnan(beta) && isfinite(beta));
             vecTimesScalar(n, d, beta);
             vecAddEqual(n, d, r);
         }
