@@ -49,8 +49,10 @@ public:
     void ClearForces(const std::vector<Particle *> &pVector);
 
     void CalculateForces(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector);
-
+    
     void ScaleVectorTuples(std::vector<Vec2fTuple> &dVector, const double scaleFactor);
+    
+    void printArray(std::string name, int n, double* ar);
 
 private:
     const std::vector<Particle *> &m_ParticlesVector;

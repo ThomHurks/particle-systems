@@ -8,7 +8,7 @@
 
 // Karen's CGD
 
-#define MAX_STEPS 100
+#define MAX_STEPS 10000
 
 // Matrix class the solver will accept
 class implicitMatrix

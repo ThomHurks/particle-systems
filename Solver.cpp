@@ -246,7 +246,12 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     {
         rightHandSide[i] = -JDotqdot[i] - JWQ[i] - ksC[i] - kdCDot[i];
     }
-
+    
+    printArray("JDotqdot",m,JDotqdot);
+    printArray("JWQ",m,JWQ);
+    printArray("ksC",m,ksC);
+    printArray("kdCDot",m,kdCDot);
+    printArray("RHS",m,rightHandSide);
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double *lambda = new double[m];
     std::fill(lambda, lambda + m, 0.0);
@@ -311,5 +316,16 @@ void Solver::ScaleVectorTuples(std::vector<Vec2fTuple> &dVector, const double sc
         dVector[i].vec1 *= scaleFactor;
         dVector[i].vec2 *= scaleFactor;
     }
+}
+
+void Solver::printArray(std::string name, int n, double* ar)
+{
+    std::cout<<name<<": ";
+    int i;
+    for(i = 0; i < n; i++)
+    {
+        std::cout<<ar[i]<<", ";
+    }
+    std::cout<<std::endl;
 }
 
