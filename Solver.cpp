@@ -280,7 +280,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     int steps = 0; // 0 implies MAX_STEPS.
     std::cout << "Calling conjugate gradient algorithm...\n";
     double rSqrLen = ConjGrad(m_int, &JWJTranspose, lambda, rightHandSide, epsilon, &steps);// solve JWJT lambda = righthandside for lambda
-    for (i = 0; i < m; ++i) { assert(!isnan(lambda[i]) && isfinite(lambda[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(lambda[i]) && std::isfinite(lambda[i])); }
     std::cout << rSqrLen<<std::endl;
     std::cout << steps<<std::endl;
 
