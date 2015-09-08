@@ -2,6 +2,8 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include <assert.h>
+
 #else
 #include <GL/glut.h>
 #endif
@@ -52,12 +54,11 @@ void AngularSpring::ApplyForce(const std::vector<Particle*> & pVector)
     Vec2f F1 = -((m_ks * d1_mag) + m_kd * (Dot(I1_Dot, d1) / d1_mag)) * normalized(d1);
     Vec2f F2 = -((m_ks * d2_mag) + m_kd * (Dot(I2_Dot, d2) / d2_mag)) * normalized(d2);
 
-    if (!isnan(F1))
-    {  m_p1->m_AccumulatedForce += F1; 
-      m_MassPoint->m_AccumulatedForce -= F1;}
+    assert(!isnan(F1) && isfinite(F1));
+    m_p1->m_AccumulatedForce += F1;
+    m_MassPoint->m_AccumulatedForce -= F1;
 
-    if (!isnan(F2))
-    { m_p2->m_AccumulatedForce += F2;
-      m_MassPoint->m_AccumulatedForce -= F2;}
-    
+    assert(!isnan(F2) && isfinite(F2));
+    m_p2->m_AccumulatedForce += F2;
+    m_MassPoint->m_AccumulatedForce -= F2;
 }

@@ -9,7 +9,7 @@
 #include <iostream>
 #include "BlockSparseMatrix.h"
 
-void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (or greater) than the heigh (greatest pi+jlength) of the maatrix
+void BlockSparseMatrix::matVecMult(double x[], double r[]) // x.length is equal (or greater) than the height (greatest pi+jlength) of the matrix
 {
     size_t i, j, k, n;
     for (k = 0, n = m_Matrix.size(); k < n; ++k) {
