@@ -161,6 +161,7 @@ public:
     }
 
     template<class T> inline bool isnan(const TVec2<T>& v)  { return std::isnan(v[0] + v[1]); }
+    template<class T> inline bool isfinite(const TVec2<T>& v)  { return std::isfinite(v[0] + v[1]); }
 
     typedef TVec2<double> Vec2;
     typedef TVec2<float>  Vec2f;

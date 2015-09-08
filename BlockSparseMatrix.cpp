@@ -7,9 +7,10 @@
 //
 
 #include <iostream>
+#include <assert.h>
 #include "BlockSparseMatrix.h"
 
-void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (or greater) than the heigh (greatest pi+jlength) of the maatrix
+void BlockSparseMatrix::matVecMult(double x[], double r[]) // x.length is equal (or greater) than the height (greatest pi+jlength) of the matrix
 {
     size_t i, j, k, n;
     for (k = 0, n = m_Matrix.size(); k < n; ++k) {
@@ -23,6 +24,7 @@ void BlockSparseMatrix::matVecMult(double x[], double r[])//x.length is equal (o
                 double val = *(block.data[block.Index(i, j)]);
                 double prod = val * x[gj];
                 r[gi] += prod;
+                assert(!isnan(r[gi]) && isfinite(r[gi]));
             }
         }
     }
@@ -41,6 +43,7 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
                 double val = *(block.data[block.Index(i, j)]);
                 double prod = val * x[gi];
                 r[gj] += prod;
+                assert(!isnan(r[gj]) && isfinite(r[gj]));
             }
         }
     }

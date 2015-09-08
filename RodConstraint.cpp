@@ -1,6 +1,8 @@
 #include "RodConstraint.h"
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include <assert.h>
+
 #else
 #include <GL/glut.h>
 #endif
@@ -65,4 +67,15 @@ void RodConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     
     m_dCDot_dp2_x=-dv[0];//should be x of m_p2.velocity-m_p1.velocity
     m_dCDot_dp2_y=-dv[1];//should be y of m_p2.velocity-m_p1.velocity
+
+    assert(!isnan(m_C) && isfinite(m_C));
+    assert(!isnan(m_CDot) && isfinite(m_CDot));
+    assert(!isnan(m_dC_dp1_x) && isfinite(m_dC_dp1_x));
+    assert(!isnan(m_dC_dp1_y) && isfinite(m_dC_dp1_y));
+    assert(!isnan(m_dC_dp2_x) && isfinite(m_dC_dp2_x));
+    assert(!isnan(m_dC_dp2_y) && isfinite(m_dC_dp2_y));
+    assert(!isnan(m_dCDot_dp1_x) && isfinite(m_dCDot_dp1_x));
+    assert(!isnan(m_dCDot_dp1_y) && isfinite(m_dCDot_dp1_y));
+    assert(!isnan(m_dCDot_dp2_x) && isfinite(m_dCDot_dp2_x));
+    assert(!isnan(m_dCDot_dp2_y) && isfinite(m_dCDot_dp2_y));
 }

@@ -1,6 +1,8 @@
 #include "MouseSpringForce.h"
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include <assert.h>
+
 #else
 #include <GL/glut.h>
 #endif
@@ -26,6 +28,8 @@ void MouseSpringForce::ApplyForce(const std::vector<Particle*> & pVector)
     Vec2f l_unit = normalized(l);
     
     Vec2f f_a = (m_ks * (l_magnitude - m_dist) + m_kd * (Dot(lDot, l) / l_magnitude)) * l_unit;
-    
+
+    assert(!isnan(f_a) && isfinite(f_a));
     m_p->m_AccumulatedForce += f_a;
+    assert(!isnan(m_p->m_AccumulatedForce) && isfinite(m_p->m_AccumulatedForce));
 }

@@ -44,7 +44,9 @@ set(SOURCE_FILES
         AngularSpring.h
         JWJTranspose.cpp
         JWJTranspose.h
-        Constraint.h)
+        Constraint.h
+        FixedPointConstraint.h
+        FixedPointConstraint.cpp)
 
 add_executable(tue_scg_particle_systems ${SOURCE_FILES})
 
