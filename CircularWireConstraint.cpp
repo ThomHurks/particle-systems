@@ -2,6 +2,7 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #include <math.h>
+#include <assert.h>
 
 #else
 #include <GL/glut.h>
@@ -58,4 +59,11 @@ void CircularWireConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     m_dC_dp_y = dC_dp[1];
     m_dCDot_dp_x = m_p->m_Velocity[0];
     m_dCDot_dp_y = m_p->m_Velocity[1];
+
+    assert(!isnan(m_C) && isfinite(m_C));
+    assert(!isnan(m_CDot) && isfinite(m_CDot));
+    assert(!isnan(m_dC_dp_x) && isfinite(m_dC_dp_x));
+    assert(!isnan(m_dC_dp_y) && isfinite(m_dC_dp_y));
+    assert(!isnan(m_dCDot_dp_x) && isfinite(m_dCDot_dp_x));
+    assert(!isnan(m_dCDot_dp_y) && isfinite(m_dCDot_dp_y));
 }

@@ -2,6 +2,7 @@
 // Created by Thom Hurks on 20-08-15.
 //
 
+#include <assert.h>
 #include "JWJTranspose.h"
 
 JWJTranspose::JWJTranspose(const size_t n, const double W[], BlockSparseMatrix &J) : n(n), W(W), J(J)
@@ -13,12 +14,14 @@ void JWJTranspose::matVecMult(double x[], double r[])
 {
     // First calculate JTranspose times X, store in m_IntermediateVector.
     J.matTransVecMult(x, m_IntermediateVector);
-    // Then calculate W times JTransposeX, store in m_IntermediateVector.
     size_t i;
+    for (i = 0; i < n; ++i) { assert(!isnan(m_IntermediateVector[i]) && isfinite(m_IntermediateVector[i])); }
+    // Then calculate W times JTransposeX, store in m_IntermediateVector.
     for (i = 0; i < n; ++i)
     {
         m_IntermediateVector[i] *= W[i];
     }
+    for (i = 0; i < n; ++i) { assert(!isnan(m_IntermediateVector[i]) && isfinite(m_IntermediateVector[i])); }
     // Now do final multiplication with J to obtain JWJTransposeX.
     J.matVecMult(m_IntermediateVector, r);
 }
