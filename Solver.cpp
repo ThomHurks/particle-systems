@@ -1,5 +1,6 @@
 #include <assert.h>
 #include "Solver.h"
+#include <stdlib.h>
 
 Solver::Solver(const std::vector<Particle *> &pVector, const std::vector<Force *> &fVector,
                const std::vector<Force *> &cVector, BlockSparseMatrix &J, BlockSparseMatrix &JDot, const double ks,
@@ -151,7 +152,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
         qdot[i * 2] = m_ParticlesVector[i]->m_Velocity[0];
         qdot[(i * 2) + 1] = m_ParticlesVector[i]->m_Velocity[1];
     }
-    for (i = 0; i < two_n; ++i) { assert(!isnan(qdot[i]) && isfinite(qdot[i])); }
+    for (i = 0; i < two_n; ++i) { assert(!std::isnan(qdot[i]) && std::isfinite(qdot[i])); }
 
     // Create the C and CDot arrays that contain the constraint derivatives by gathering the C and CDot values.
     // The size of the arrays are n, since each constraint affects one or more particles.
@@ -162,8 +163,8 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
         C[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetC();
         CDot[i] = (static_cast<Constraint*>(m_ConstraintsVector[i]))->GetCDot();
     }
-    for (i = 0; i < m; ++i) { assert(!isnan(C[i]) && isfinite(C[i])); }
-    for (i = 0; i < m; ++i) { assert(!isnan(CDot[i]) && isfinite(CDot[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(C[i]) && std::isfinite(C[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(CDot[i]) && std::isfinite(CDot[i])); }
     /*Debugging lines
     std::cout<<"C:"<<std::endl;
     for(i = 0; i < m; i++)
@@ -210,7 +211,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     double *W = new double[n];
     for (i = 0; i < n; ++i)
     { W[i] = 1.0 / m_ParticlesVector[i]->m_Mass; }
-    for (i = 0; i < n; ++i) { assert(!isnan(W[i]) && isfinite(W[i])); }
+    for (i = 0; i < n; ++i) { assert(!std::isnan(W[i]) && std::isfinite(W[i])); }
 
     // Start computing equation 11:
 
@@ -218,7 +219,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     double *JDotqdot = new double[m];
     std::fill(JDotqdot, JDotqdot + m, 0.0);
     m_JDot.matVecMult(qdot, JDotqdot);
-    for (i = 0; i < m; ++i) { assert(!isnan(JDotqdot[i]) && isfinite(JDotqdot[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(JDotqdot[i]) && std::isfinite(JDotqdot[i])); }
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
     double *WQ = new double[two_n];//W*Q = qDotDot
@@ -227,13 +228,13 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
         WQ[i * 2] = W[i] * Q[i][0];
         WQ[(i * 2) + 1] = W[i] * Q[i][1];
     }
-    for (i = 0; i < two_n; ++i) { assert(!isnan(WQ[i]) && isfinite(WQ[i])); }
+    for (i = 0; i < two_n; ++i) { assert(!std::isnan(WQ[i]) && std::isfinite(WQ[i])); }
 
     // Then calculate J times WQ. The result is a vector of size m.
     double *JWQ = new double[m]; //= Cdotdot
     std::fill(JWQ, JWQ + m, 0.0);
     m_J.matVecMult(WQ, JWQ);
-    for (i = 0; i < m; ++i) { assert(!isnan(JWQ[i]) && isfinite(JWQ[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(JWQ[i]) && std::isfinite(JWQ[i])); }
 
     // Then calculate ks times C. C has size m
     double *ksC = new double[m];
@@ -241,7 +242,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     {
         ksC[i] = ks * C[i];
     }
-    for (i = 0; i < m; ++i) { assert(!isnan(ksC[i]) && isfinite(ksC[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(ksC[i]) && std::isfinite(ksC[i])); }
 
     // Then calculate kd times CDot. CDot has size m.
     double *kdCDot = new double[m];
@@ -249,7 +250,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     {
         kdCDot[i] = kd * CDot[i];
     }
-    for (i = 0; i < m; ++i) { assert(!isnan(kdCDot[i]) && isfinite(kdCDot[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(kdCDot[i]) && std::isfinite(kdCDot[i])); }
 
     // Now compute the entire right side of equation 11. The result is a double vector of size m.
     double *rightHandSide = new double[m];
@@ -263,27 +264,27 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     printArray("ksC",m,ksC);
     printArray("kdCDot",m,kdCDot);
     printArray("RHS",m,rightHandSide);
-    for (i = 0; i < m; ++i) { assert(!isnan(rightHandSide[i]) && isfinite(rightHandSide[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(rightHandSide[i]) && std::isfinite(rightHandSide[i])); }
 
     // The left hand side of equation 11 is implemented inside the class JWJTranspose, an implicit matrix.
     double *lambda = new double[m];
     std::fill(lambda, lambda + m, 0.0);
-    for (i = 0; i < m; ++i) { assert(!isnan(lambda[i]) && isfinite(lambda[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(lambda[i]) && std::isfinite(lambda[i])); }
     JWJTranspose JWJTranspose(two_n, W, m_J);//two_n is the dimension of the intermediate vector, which is correct
 
     int m_int = static_cast<int>(m);
     int steps = 0; // 0 implies MAX_STEPS.
     std::cout << "Calling conjugate gradient algorithm...\n";
     double rSqrLen = ConjGrad(m_int, &JWJTranspose,lambda,rightHandSide, epsilon, &steps);// solve JWJT lambda = righthandside for lambda
-    for (i = 0; i < m; ++i) { assert(!isnan(lambda[i]) && isfinite(lambda[i])); }
+    for (i = 0; i < m; ++i) { assert(!std::isnan(lambda[i]) && std::isfinite(lambda[i])); }
     std::cout << rSqrLen<<std::endl;
     std::cout << steps<<std::endl;
 
     double *QHat = new double[two_n]; //constraint forces -> length 2n
     std::fill(QHat, QHat + two_n, 0.0);
-    for (i = 0; i < two_n; ++i) { assert(!isnan(QHat[i]) && isfinite(QHat[i])); }
+    for (i = 0; i < two_n; ++i) { assert(!std::isnan(QHat[i]) && std::isfinite(QHat[i])); }
     m_J.matTransVecMult(lambda, QHat); //lambda has size m, so multiplying with JTrans yields a 2n vector
-    for (i = 0; i < two_n; ++i) { assert(!isnan(QHat[i]) && isfinite(QHat[i])); }
+    for (i = 0; i < two_n; ++i) { assert(!std::isnan(QHat[i]) && std::isfinite(QHat[i])); }
     for(i = 0; i < n; ++i)
     {
         Vec2f constrainingForce = Vec2f(static_cast<float>(QHat[i * 2]), static_cast<float>(QHat[(i * 2) + 1]));

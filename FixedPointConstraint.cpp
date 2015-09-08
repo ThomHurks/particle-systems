@@ -1,9 +1,8 @@
 #include "FixedPointConstraint.h"
-#ifdef __APPLE__
-#include <GLUT/glut.h>
 #include <math.h>
 #include <assert.h>
-
+#ifdef __APPLE__
+#include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
@@ -59,10 +58,10 @@ void FixedPointConstraint::ApplyForce(const std::vector<Particle*> & pVector)
     m_dCDot_dp_x = m_p->m_Velocity[0];
     m_dCDot_dp_y = m_p->m_Velocity[1];
 
-    assert(!isnan(m_C) && isfinite(m_C));
-    assert(!isnan(m_CDot) && isfinite(m_CDot));
-    assert(!isnan(m_dC_dp_x) && isfinite(m_dC_dp_x));
-    assert(!isnan(m_dC_dp_y) && isfinite(m_dC_dp_y));
-    assert(!isnan(m_dCDot_dp_x) && isfinite(m_dCDot_dp_x));
-    assert(!isnan(m_dCDot_dp_y) && isfinite(m_dCDot_dp_y));
+    assert(!std::isnan(m_C) && std::isfinite(m_C));
+    assert(!std::isnan(m_CDot) && std::isfinite(m_CDot));
+    assert(!std::isnan(m_dC_dp_x) && std::isfinite(m_dC_dp_x));
+    assert(!std::isnan(m_dC_dp_y) && std::isfinite(m_dC_dp_y));
+    assert(!std::isnan(m_dCDot_dp_x) && std::isfinite(m_dCDot_dp_x));
+    assert(!std::isnan(m_dCDot_dp_y) && std::isfinite(m_dCDot_dp_y));
 }
