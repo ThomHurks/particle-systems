@@ -23,6 +23,7 @@ void BlockSparseMatrix::matVecMult(double x[], double r[]) // x.length is equal 
                 size_t gj = block.pj * 2 + j;
                 double val = *(block.data[block.Index(i, j)]);
                 double prod = val * x[gj];
+                assert(!isnan(prod) && isfinite(prod));
                 r[gi] += prod;
                 assert(!isnan(r[gi]) && isfinite(r[gi]));
             }
@@ -42,6 +43,7 @@ void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equ
                 size_t gj = 2 * block.pj + j;
                 double val = *(block.data[block.Index(i, j)]);
                 double prod = val * x[gi];
+                assert(!isnan(prod) && isfinite(prod));
                 r[gj] += prod;
                 assert(!isnan(r[gj]) && isfinite(r[gj]));
             }
