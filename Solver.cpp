@@ -206,16 +206,19 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     //END VERFICATION*/
     
     // Q contains all accumulated forces as 2-vectors. Size is n.
-    Vec2f *Q = new Vec2f[n];
+    double *Q = new double[two_n];
     for (i = 0; i < n; ++i)
-    { Q[i] = m_ParticlesVector[i]->m_AccumulatedForce; }
-    for (i = 0; i < n; ++i) { assert(!isnan(Q[i]) && isfinite(Q[i])); }
+    { Q[2*i] = m_ParticlesVector[i]->m_AccumulatedForce[0];
+    Q[2*i+1] = m_ParticlesVector[i]->m_AccumulatedForce[1];}
+    for (i = 0; i < two_n; ++i) { assert(!std::isnan(Q[i]) && std::isfinite(Q[i])); }
 
     // W contains the inverse of all particle masses as a double array of size n.
-    double *W = new double[n];
+    double *W = new double[two_n];
     for (i = 0; i < n; ++i)
-    { W[i] = 1.0 / m_ParticlesVector[i]->m_Mass; }
-    for (i = 0; i < n; ++i) { assert(!std::isnan(W[i]) && std::isfinite(W[i])); }
+    { W[2*i] = 1.0 / m_ParticlesVector[i]->m_Mass;
+    W[2*i+1] = 1.0 / m_ParticlesVector[i]->m_Mass;
+    }
+    for (i = 0; i < two_n; ++i) { assert(!std::isnan(W[i]) && std::isfinite(W[i])); }
 
     // Start computing equation 11:
 
@@ -227,10 +230,9 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
 
     // Then calculate W times Q. The result is a vector of size 2n since each dimension is stored separately.
     double *WQ = new double[two_n];//W*Q = qDotDot
-    for (i = 0; i < n; ++i)
+    for (i = 0; i < two_n; ++i)
     {
-        WQ[i * 2] = W[i] * Q[i][0];
-        WQ[(i * 2) + 1] = W[i] * Q[i][1];
+        WQ[i] = W[i] * Q[i];
     }
     for (i = 0; i < two_n; ++i) { assert(!std::isnan(WQ[i]) && std::isfinite(WQ[i])); }
 
