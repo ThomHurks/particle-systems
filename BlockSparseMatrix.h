@@ -34,6 +34,7 @@ public:
     void print();
     int getGlobalI(const int i);
     int getGlobalJ(const int j);
+    void empty();
 private:
     std::vector<MatrixBlock> m_Matrix;
     int m_n;//the ammount of particles in the system
@@ -41,8 +42,9 @@ private:
     int m_d;//the dimension of the system
     int *m_cWidths;//at index i, the width of constraint i is stored
     int *m_pHeights;//at index j, the height of particle j (d) is stored
-    int m_cWidth;
-    int m_pHeight;
-    int *m_gIs;
-    int *m_gJs;
+    int m_cWidth;//the width of the total matrix
+    int m_pHeight;//the height of the total matrix
+    int *m_gIs;//the combined width of the constraints up to i-1
+    int *m_gJs;//the combined height of the particles up to j-1
+    bool m_initialised = false;
 };

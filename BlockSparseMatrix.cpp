@@ -38,6 +38,7 @@ void BlockSparseMatrix::setDimensions(const int n, const int m, const int d)
     }
     m_cWidth = m_gIs[m-1]+m_cWidths[m-1];
     m_pHeight = m_gJs[n-1]+m_pHeights[n-1];
+    m_initialised = true;
 }
 
 int BlockSparseMatrix::getGlobalI(const int i)
@@ -51,9 +52,23 @@ int BlockSparseMatrix::getGlobalJ(const int j)
     return m_gJs[j];
 }
 
+void BlockSparseMatrix::empty()
+{   
+    int i;
+    for (i = 0; i < m_Matrix.size(); ++i)
+    {
+        //delte m_Matrix[i];
+    }
+    m_Matrix.clear();
+    m_initialised = false;
+}
+
+
 
 void BlockSparseMatrix::matVecMult(double x[], double r[]) // x.length is equal (or greater) than the height (greatest pi+jlength) of the matrix
 {
+    
+    assert(m_initialised);
     size_t i, j, k, n;
     //r should be m 0's, x should be n doubles
     for(i = 0; i < m_cWidth;i++){r[i]=0.0;}
@@ -79,7 +94,7 @@ void BlockSparseMatrix::matVecMult(double x[], double r[]) // x.length is equal 
 void BlockSparseMatrix::matTransVecMult(double x[], double r[])//x.length is equal to the width (greatest ci+ilength) of the maatrix
 {
     size_t i, j, k, n;
-    
+    assert(m_initialised);
     //r should be m 0's, x should be n doubles
     for(i = 0; i < m_pHeight;i++){r[i]=0.0;}
     for(i = 0; i < m_cWidth;i++){assert(!isnan(x[i]) && isfinite(x[i]));}

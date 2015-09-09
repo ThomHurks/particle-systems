@@ -72,7 +72,11 @@ static void free_data(void)
     for (i = 0, n = cVector.size(); i < n; ++i)
     { delete cVector[i]; }
     cVector.clear();
+    
 
+    J.empty();
+    JDot.empty();
+    
     delete msf;
     msf = nullptr;
 
@@ -86,75 +90,8 @@ static void free_data(void)
 
 static void init(void)
 {
-    /*
-    BlockSparseMatrix M;
-    double* *dataBlock1 = new double*[2];
-    double* *dataBlock2 = new double*[2];
-    double* *dataBlock3 = new double*[2];
-    dataBlock1[0] = new double[1];
-    dataBlock1[0][0]=1.0;
-    dataBlock1[1] = new double[1];
-    dataBlock1[1][0]=2.0;
-    dataBlock2[0] = new double[1];
-    dataBlock2[0][0]=3.0;
-    dataBlock2[1] = new double[1];
-    dataBlock2[1][0]=4.0;
-    dataBlock3[0] = new double[1];
-    dataBlock3[0][0]=5.0;
-    dataBlock3[1] = new double[1];
-    dataBlock3[1][0]=6.0;
-    
-    M.AddNewBlock(0,0,1,2,dataBlock1);
-    M.AddNewBlock(1,0,1,2,dataBlock2);
-    M.AddNewBlock(2,0,1,2,dataBlock3);
-    std::cout<<"M:"<<std::endl;
-    M.print();
-    
-    double* x = new double[3];
-    x[0]=1.0;
-    x[1]=2.0;
-    x[2]=3.0;
-    int i;
-    
-    std::cout<<"x: ";
-    for(i=0; i < 3;i++)
-    {
-        std::cout<<x[i]<<" ";
-    }
-    std::cout<<std::endl;
-    double* v = new double[2];
-    std::fill(v,v+2,0);
-    M.matVecMult(x,v);
-    std::cout<<"v: ";
-    for(i=0; i < 2;i++)
-    {
-        std::cout<<v[i]<<" ";
-    }
-    std::cout<<std::endl;
-    
-    
-    double* x2 = new double[2];
-    x2[0]=1.0;
-    x2[1]=2.0;
-    std::cout<<"x2: ";
-    for(i=0; i < 2;i++)
-    {
-        std::cout<<x2[i]<<" ";
-    }
-    std::cout<<std::endl;
-    double* v2 = new double[3];
-    std::fill(v2,v2+3,0);
-    M.matTransVecMult(x2,v2);
-    std::cout<<"v2: ";
-    for(i=0; i < 3;i++)
-    {
-        std::cout<<v2[i]<<" ";
-    }
-    std::cout<<std::endl;
-    */
-    
-    
-    
+    J.setDimensions(pVector.size(),cVector.size(),2);
+    JDot.setDimensions(pVector.size(),cVector.size(),2);    
     
     // ks and kd are spring and damping constants for the constraint forces in equation 11.
     double ks = 1;
@@ -202,18 +139,17 @@ static void initTest(void)
     // constraints...
     fVector.push_back(new GravityForce());
     fVector.push_back(new SpringForce(pVector[0],pVector[1],dist,1,1));
+    fVector.push_back(new SpringForce(pVector[1],pVector[2],dist,1,1));
     int constraintID = 0;
     cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
     //cVector.push_back(new RodConstraint(pVector[0],pVector[1],dist,&J, &JDot, constraintID++));
     cVector.push_back(new FixedPointConstraint(pVector[2], center + offset+ offset+ offset, &J, &JDot, constraintID++));
-    J.setDimensions(pVector.size(),cVector.size(),2);
-    JDot.setDimensions(pVector.size(),cVector.size(),2);
     init();
 }
 
 static void initCloth(bool crossFibers)
 {
-    init();
+    
 
     //Note; Without cross fibers appears to function better
     const float dist = 0.1f;
@@ -269,11 +205,11 @@ static void initCloth(bool crossFibers)
             }
         }
     }
+    init();
 }
 
 static void initHair()
 {
-    init();
 
     const int internalParticles = 65; //amount of particles in hair is this + 2
     Vec2f start(0.25, -0.75f);
@@ -301,6 +237,8 @@ static void initHair()
     for (i = 1; i <= internalParticles; i++) {
          fVector.push_back(new AngularSpring(pVector[i], pVector[i-1],pVector[i+1], angleRadians, ks, kd));
     }
+    
+    init();
     
 }
 
