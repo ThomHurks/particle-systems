@@ -181,7 +181,7 @@ static void clear_data(void)
 
 static void initTest(void)
 {
-    init();
+    
 
     const float dist = 0.2;
     const Vec2f center(0.0, 0.0);
@@ -206,7 +206,9 @@ static void initTest(void)
     cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
     //cVector.push_back(new RodConstraint(pVector[0],pVector[1],dist,&J, &JDot, constraintID++));
     cVector.push_back(new FixedPointConstraint(pVector[2], center + offset+ offset+ offset, &J, &JDot, constraintID++));
-    
+    J.setDimensions(pVector.size(),cVector.size(),2);
+    JDot.setDimensions(pVector.size(),cVector.size(),2);
+    init();
 }
 
 static void initCloth(bool crossFibers)

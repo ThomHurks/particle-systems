@@ -27,12 +27,22 @@ struct MatrixBlock {
 class BlockSparseMatrix : public implicitMatrixWithTrans
 {
 public:
+    void setDimensions(const int n, const int m, const int d);
     void matVecMult(double x[], double r[]) override;
     void matTransVecMult(double x[], double r[]) override;
     void AddNewBlock(const int ci, const int pj, const int ilength, const int jlength, double* const data[]);
     void print();
+    int getGlobalI(const int i);
+    int getGlobalJ(const int j);
 private:
     std::vector<MatrixBlock> m_Matrix;
-    int m_Width;
-    int m_Height;
+    int m_n;//the ammount of particles in the system
+    int m_m;//the ammount of constraints in the system
+    int m_d;//the dimension of the system
+    int *m_cWidths;//at index i, the width of constraint i is stored
+    int *m_pHeights;//at index j, the height of particle j (d) is stored
+    int m_cWidth;
+    int m_pHeight;
+    int *m_gIs;
+    int *m_gJs;
 };
