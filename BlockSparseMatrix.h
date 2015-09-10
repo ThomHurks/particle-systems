@@ -27,24 +27,23 @@ struct MatrixBlock {
 class BlockSparseMatrix : public implicitMatrixWithTrans
 {
 public:
-    void setDimensions(const int n, const int m, const int d);
+    BlockSparseMatrix(const size_t numParticles, const size_t numConstraints, const int particleDimension);
+    virtual ~BlockSparseMatrix();
+    void SetDimensions(const size_t numParticles, const size_t numConstraints);
+    void Clear();
     void matVecMult(double x[], double r[]) override;
     void matTransVecMult(double x[], double r[]) override;
     void AddNewBlock(const int ci, const int pj, const int ilength, const int jlength, double* const data[]);
-    void print();
-    int getGlobalI(const int i);
-    int getGlobalJ(const int j);
-    void empty();
+    void print() const;
+    // Getters:
+    int getGlobalI(const int i) const { return m_gIs[i]; }
+    int getGlobalJ(const int j) const { return m_gJs[j]; }
 private:
     std::vector<MatrixBlock> m_Matrix;
-    int m_n;//the ammount of particles in the system
-    int m_m;//the ammount of constraints in the system
-    int m_d;//the dimension of the system
-    int *m_cWidths;//at index i, the width of constraint i is stored
-    int *m_pHeights;//at index j, the height of particle j (d) is stored
-    int m_cWidth;//the width of the total matrix
-    int m_pHeight;//the height of the total matrix
-    int *m_gIs;//the combined width of the constraints up to i-1
-    int *m_gJs;//the combined height of the particles up to j-1
+    int m_cWidth;       // the width of the total matrix
+    int m_pHeight;      // the height of the total matrix
+    int *m_gIs;         // the combined width of the constraints up to i-1
+    int *m_gJs;         // the combined height of the particles up to j-1
     bool m_initialised = false;
+    int m_ParticleDimension;
 };

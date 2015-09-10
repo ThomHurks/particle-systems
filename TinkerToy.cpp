@@ -37,7 +37,8 @@ static int frame_number;
 static std::vector<Particle*> pVector;
 static std::vector<Force*> fVector;
 static std::vector<Force*> cVector;
-static BlockSparseMatrix J, JDot;
+static BlockSparseMatrix J(0, 0, 2);
+static BlockSparseMatrix JDot(0, 0, 2);
 static Solver * solver = nullptr;
 static Solver::SolverType m_SolverType = Solver::SolverType::Euler;
 
@@ -72,11 +73,10 @@ static void free_data(void)
     for (i = 0, n = cVector.size(); i < n; ++i)
     { delete cVector[i]; }
     cVector.clear();
-    
 
-    J.empty();
-    JDot.empty();
-    
+    J.Clear();
+    JDot.Clear();
+
     delete msf;
     msf = nullptr;
 
@@ -90,16 +90,15 @@ static void free_data(void)
 
 static void init(void)
 {
-    J.setDimensions(pVector.size(),cVector.size(),2);
-    JDot.setDimensions(pVector.size(),cVector.size(),2);    
-    
     // ks and kd are spring and damping constants for the constraint forces in equation 11.
-    double ks = 1;
-    double kd = 1;
+    const double ks = 1;
+    const double kd = 1;
     // epsilon is how low the linear conjugate gradient solver should go.
-    double epsilon = 0.00000001;
+    const double epsilon = 0.00000001;
     if (!solver)
-    { solver = new Solver(pVector, fVector, cVector, J, JDot, ks, kd, epsilon); }
+    {
+        solver = new Solver(pVector, fVector, cVector, J, JDot, ks, kd, epsilon);
+    }
 
     if (!currentMousePosition)
     {
@@ -118,7 +117,7 @@ static void clear_data(void)
 
 static void initTest(void)
 {
-    
+    init();
 
     const float dist = 0.2;
     const Vec2f center(0.0, 0.0);
@@ -144,12 +143,14 @@ static void initTest(void)
     cVector.push_back(new CircularWireConstraint(pVector[0], center, dist, &J, &JDot, constraintID++));
     //cVector.push_back(new RodConstraint(pVector[0],pVector[1],dist,&J, &JDot, constraintID++));
     cVector.push_back(new FixedPointConstraint(pVector[2], center + offset+ offset+ offset, &J, &JDot, constraintID++));
-    init();
+
+    J.SetDimensions(pVector.size(), cVector.size());
+    JDot.SetDimensions(pVector.size(), cVector.size());
 }
 
 static void initCloth(bool crossFibers)
 {
-    
+    init();
 
     //Note; Without cross fibers appears to function better
     const float dist = 0.1f;
@@ -205,11 +206,14 @@ static void initCloth(bool crossFibers)
             }
         }
     }
-    init();
+
+    J.SetDimensions(pVector.size(), cVector.size());
+    JDot.SetDimensions(pVector.size(), cVector.size());
 }
 
 static void initHair()
 {
+    init();
 
     const int internalParticles = 65; //amount of particles in hair is this + 2
     Vec2f start(0.25, -0.75f);
@@ -237,9 +241,9 @@ static void initHair()
     for (i = 1; i <= internalParticles; i++) {
          fVector.push_back(new AngularSpring(pVector[i], pVector[i-1],pVector[i+1], angleRadians, ks, kd));
     }
-    
-    init();
-    
+
+    J.SetDimensions(pVector.size(), cVector.size());
+    JDot.SetDimensions(pVector.size(), cVector.size());
 }
 
 /*
