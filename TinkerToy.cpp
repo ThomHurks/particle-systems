@@ -411,12 +411,15 @@ static void key_func(unsigned char key, int x, int y)
             break;
         case '1':
             m_SolverType = Solver::SolverType::Euler;
+            std::cout << "Switched to Euler.";
             break;
         case '2':
             m_SolverType = Solver::SolverType::Midpoint;
+            std::cout << "Switched to Midpoint.";
             break;
         case '3':
             m_SolverType = Solver::SolverType::RungeKutta4;
+            std::cout << "Switched to Runge Kutta 4.";
             break;
         case '!':
             dsim = false;
