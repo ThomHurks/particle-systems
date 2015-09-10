@@ -169,42 +169,7 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     }
     for (i = 0; i < m; ++i) { assert(!std::isnan(C[i]) && std::isfinite(C[i])); }
     for (i = 0; i < m; ++i) { assert(!std::isnan(CDot[i]) && std::isfinite(CDot[i])); }
-    /*Debugging lines
-    std::cout<<"C:"<<std::endl;
-    for(i = 0; i < m; i++)
-    {
-        std::cout<<C[i]<<", ";
-    }
-    std::cout<<std::endl<<"Cdot:"<<std::endl;
 
-    for(i = 0; i < m; i++)
-    {
-        std::cout<<CDot[i]<<", ";
-    }
-    std::cout<<std::endl;
-    
-    //VERFICATION:
-    double* Cdot2 = new double[m];
-    std::fill(Cdot2,Cdot2+m,0.0);
-    m_J.matVecMult(qdot,Cdot2);
-    
-    std::cout<<std::endl<<"qdot:"<<std::endl;
-
-    for(i = 0; i < 2*n; i++)
-    {
-        std::cout<<qdot[i]<<", ";
-    }
-    std::cout<<std::endl;
-    
-    std::cout<<"Cdot2:"<<std::endl;
-
-    for(i = 0; i < m; i++)
-    {
-        std::cout<<Cdot2[i]<<", ";
-    }
-    std::cout<<std::endl;
-    //END VERFICATION*/
-    
     // Q contains all accumulated forces as 2-vectors. Size is n.
     double *Q = new double[two_n];
     for (i = 0; i < n; ++i)
@@ -285,7 +250,11 @@ void Solver::SolveConstraintForces(const double ks, const double kd, const doubl
     for (i = 0; i < m; ++i) { assert(!std::isnan(lambda[i]) && std::isfinite(lambda[i])); }
     std::cout << rSqrLen<<std::endl;
     std::cout << steps<<std::endl;
-
+    double* JWJTlambda = new double[m];
+    std::fill(JWJTlambda,JWJTlambda+m,0.0);
+    JWJTranspose.matVecMult(lambda,JWJTlambda);
+    for(i = 0; i < m; i++){JWJTlambda[i] = std::abs(JWJTlambda[i]-rightHandSide[i]);}
+    printArray("JWJTl-RHS",m,JWJTlambda);
     double *QHat = new double[two_n]; //constraint forces -> length 2n
     std::fill(QHat, QHat + two_n, 0.0);
     for (i = 0; i < two_n; ++i) { assert(!std::isnan(QHat[i]) && std::isfinite(QHat[i])); }

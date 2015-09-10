@@ -44,6 +44,11 @@ void FixedPointConstraint::draw() const
         glVertex2f(m_center[0] + cos(degInRad) * 0.025, m_center[1] + sin(degInRad) * 0.025);
     }
     glEnd();
+    glBegin( GL_LINES );
+  glColor3f(1.0, 0.7, 0.8);
+  glVertex2f( m_center[0], m_center[1] );
+  glVertex2f( m_p->m_Position[0], m_p->m_Position[1] );
+  glEnd();
 }
 
 void FixedPointConstraint::ApplyForce(const std::vector<Particle*> & pVector)

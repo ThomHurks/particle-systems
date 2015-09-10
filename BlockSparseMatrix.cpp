@@ -156,8 +156,8 @@ void BlockSparseMatrix::print() const
         maxci = std::max(maxci, m_Matrix[k].ci);
         maxpj = std::max(maxpj, m_Matrix[k].pj);
     }
-    int dimi =maxci+1;
-    int dimj = 2*(maxpj+1);
+    int dimi =m_cWidth;
+    int dimj = m_pHeight;
     double board[dimi][dimj]; //creates a 9*9 matrix or a 2d array.
 
     for (int i = 0; i < dimi; i++) //This loops on the rows.

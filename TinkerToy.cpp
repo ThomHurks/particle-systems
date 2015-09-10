@@ -91,7 +91,7 @@ static void free_data(void)
 static void init(void)
 {
     // ks and kd are spring and damping constants for the constraint forces in equation 11.
-    const double ks = 1;
+    const double ks = 10;
     const double kd = 1;
     // epsilon is how low the linear conjugate gradient solver should go.
     const double epsilon = 0.00000001;
@@ -153,11 +153,14 @@ static void initCloth(bool crossFibers)
     init();
 
     //Note; Without cross fibers appears to function better
-    const float dist = 0.1f;
-    const Vec2f topLeft(-0.75f, 0.75f);
-    const Vec2f offset(dist, 0.0);
-    const Vec2f offset2(0.0, -dist);
-    const int dim = 15;
+    const int dim = 14;
+    const Vec2f bottomLeft(-0.75f, -0.75f);
+    const Vec2f topLeft(-0.75,0.75);
+    const Vec2f bottomRight(0.75,-0.75);
+    const Vec2f offsetX = (bottomRight-bottomLeft)/dim;
+    const Vec2f offsetY = (topLeft-bottomLeft)/dim;
+    const float dist = offsetX[0];
+    const Vec2f topRight = bottomLeft+(offsetX+offsetY)*dim;
 
     int particleID = 0;
     int i;
@@ -165,12 +168,12 @@ static void initCloth(bool crossFibers)
     //init particles
     for (i = 0; i <= dim; i++) {
         for (j = 0; j <= dim; j++) {
-            pVector.push_back(new Particle(topLeft + offset * i + offset2*j, particleID++));
+            pVector.push_back(new Particle(bottomLeft + offsetX * i + offsetY*j, particleID++));
         }
     }
-    double ks = 0.01;
+    double ks = 1;
     double kd = 0.01;
-    double rest = 0.075;
+    double rest = dist/1.05;
     for (i = 0; i < dim; i++) {
         for (j = 0; j < dim; j++) {
             int cur = j * (dim + 1) + i;
@@ -206,7 +209,9 @@ static void initCloth(bool crossFibers)
             }
         }
     }
-
+    fVector.push_back(new GravityForce());
+    cVector.push_back(new FixedPointConstraint(pVector[dim],topLeft,&J,&JDot,0));
+    cVector.push_back(new FixedPointConstraint(pVector[(dim+1)*(dim+1)-1],topRight,&J,&JDot,1));
     J.SetDimensions(pVector.size(), cVector.size());
     JDot.SetDimensions(pVector.size(), cVector.size());
 }
@@ -546,7 +551,7 @@ int main(int argc, char ** argv)
 
     if (argc == 1) {
         N = 64;
-        dt = 0.1f;
+        dt = 0.01f;
         d = 5.f;
         fprintf(stderr, "Using defaults : N=%d dt=%g d=%g\n",
                 N, dt, d);

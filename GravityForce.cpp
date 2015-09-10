@@ -9,7 +9,7 @@
 #include <assert.h>
 #include "GravityForce.h"
 
-const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -9.80665 * pow(10,-5.5));
+const Vec2f GravityForce::m_Gravity = Vec2f(0.0, -9.80665 * pow(10,-4.5));
 
  
 void GravityForce::draw() const
